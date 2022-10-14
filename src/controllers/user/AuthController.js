@@ -33,7 +33,7 @@ module.exports.VerifyOTP = async (req, res) => {
   let response = {};
 
   try {
-    await AuthService.verifyOTP(req.body)
+    await AuthService.verifyOTP({ ...req.body, expire_at: new Date() })
       .then(async (result) => {
         const loginData = await AuthService.authenticate({
           phone: req.body.phone,
@@ -93,6 +93,7 @@ module.exports.ForgetPassword = async (req, res) => {
   res.send("Forget Password");
 };
 
+module.exports.ResetPassword = async (req, res) => {};
 module.exports.getMe = async (req, res) => {
   let response = {};
   try {

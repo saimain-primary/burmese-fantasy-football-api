@@ -25,7 +25,7 @@ const verifyCode = async (data) => {
       phone: data.phone,
       code: data.code,
       expireAt: {
-        $lt: new Date(),
+        $gt: new Date(),
       },
       isUsed: false,
     },
@@ -87,6 +87,7 @@ module.exports.authenticate = async (data) => {
                 phone: phone,
                 name: result.name,
                 id: result._id,
+                isAdmin: result.isAdmin,
               };
               const jwtToken = generateToken(userJWT);
               resolve({

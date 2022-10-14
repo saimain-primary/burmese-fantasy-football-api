@@ -60,9 +60,12 @@ module.exports.saveUser = async (data) => {
           reject(err);
         } else {
           savedUser = doc;
+          const currentDate = new Date();
+
           const saveOTP = {
             code: code.toString(),
             phone: data.phone,
+            expireAt: currentDate.setMinutes(currentDate.getMinutes() + 3),
           };
           OTPModel.create(saveOTP, function (err, doc) {
             if (err) {
@@ -70,7 +73,7 @@ module.exports.saveUser = async (data) => {
             } else {
               sendSMS({
                 phone: data.phone,
-                message: `${saveOTP.code} is your BFF verification code. Your code is valid for 1 minute.`,
+                message: `${saveOTP.code} is your BFF verification code. Your code is valid for 3 minute.`,
               })
                 .then(() => {
                   resolve(savedUser);
