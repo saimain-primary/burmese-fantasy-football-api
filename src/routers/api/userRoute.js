@@ -23,6 +23,7 @@ router.get("/premier-league-teams", TeamController.getPremierLeagueTeamList);
 router.get("/teams", TeamController.getTeamList);
 
 router.get("/fixture", FixtureController.getFixtureList);
+router.get("/venues", FixtureController.getVenuesDetail);
 router.get("/current-gameweek", GameWeekController.currentGameWeek);
 
 router.post(
@@ -37,4 +38,5 @@ router.post(
 );
 
 router.get("/gameweek", GameWeekController.getGameWeek);
+
 module.exports = router;
