@@ -23,15 +23,18 @@ router.get("/premier-league-teams", TeamController.getPremierLeagueTeamList);
 router.get("/teams", TeamController.getTeamList);
 
 router.get("/fixture", FixtureController.getFixtureList);
+router.get("/current-gameweek", GameWeekController.currentGameWeek);
 
+router.post(
+  "/current-gameweek",
+  authMiddleware.checkAdmin,
+  GameWeekController.changeCurrentGameWeek
+);
 router.post(
   "/gameweek",
   authMiddleware.checkAdmin,
   GameWeekController.addGameWeek
 );
-router.get(
-  "/gameweek",
-  authMiddleware.checkAdmin,
-  GameWeekController.getGameWeek
-);
+
+router.get("/gameweek", GameWeekController.getGameWeek);
 module.exports = router;

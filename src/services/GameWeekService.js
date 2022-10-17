@@ -1,8 +1,19 @@
 const GameWeekDoc = require("../models/GameWeek");
 
 module.exports.getGameWeek = async (params) => {
+  let where = {};
+
+  if (params) {
+    if (params.is_current && params.is_current === true) {
+      let data = {
+        isCurrent: true,
+      };
+      where = { ...where, ...data };
+    }
+  }
+
   return new Promise(function (resolve, reject) {
-    GameWeekDoc.find()
+    GameWeekDoc.find(where)
       .sort({
         week: 1,
       })
@@ -19,13 +30,35 @@ module.exports.saveGameWeek = async (params) => {
   let saveData = {
     name: "Game Week " + params.gameWeek,
     week: params.gameWeek,
-    startDate: params.startDate.split("-").reverse().join("-"),
-    endDate: params.endDate.split("-").reverse().join("-"),
+    startDate: params.startDate,
+    endDate: params.endDate,
     isCurrent: params.isCurrent,
   };
 
   return new Promise(function (resolve, reject) {
     GameWeekDoc.create(saveData)
+      .then(function (response) {
+        resolve(response);
+      })
+      .catch(function (error) {
+        reject(error);
+      });
+  });
+};
+
+module.exports.changeCurrentGameWeek = async (params) => {
+  console.log(params);
+  const oldFilter = { isCurrent: true };
+  const oldUpdate = { isCurrent: false };
+  await GameWeekDoc.findOneAndUpdate(oldFilter, oldUpdate);
+
+  return new Promise(function (resolve, reject) {
+    const newFilter = { week: params.gameWeek };
+    const newUpdate = { isCurrent: true };
+
+    GameWeekDoc.findOneAndUpdate(newFilter, newUpdate, {
+      new: true,
+    })
       .then(function (response) {
         resolve(response);
       })

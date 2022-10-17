@@ -9,6 +9,7 @@ const GameWeekSchema = new mongoose.Schema(
     week: {
       type: String,
       required: true,
+      unique: true,
     },
     startDate: {
       type: String,
