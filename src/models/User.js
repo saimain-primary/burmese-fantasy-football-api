@@ -27,6 +27,11 @@ const UserSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
+    isDisablePredict: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     isAdmin: {
       type: Boolean,
       required: true,

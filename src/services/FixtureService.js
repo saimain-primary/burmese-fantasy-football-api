@@ -1,19 +1,33 @@
 const axios = require("axios");
 const config = require("../config");
+const GameWeekDoc = require("../models/GameWeek");
 module.exports.getList = async (params) => {
   let reqParams = {};
 
-  if (params.id) {
+  if (params.fixture_id) {
     reqParams = {
-      id: params.id,
+      id: params.fixture_id,
     };
+  } else if (params.fixture_week) {
+    // get start and end from week
+    const weekData = await GameWeekDoc.findOne({ week: params.fixture_week });
+    console.log("weekdata", weekData);
+    if (weekData) {
+      reqParams = {
+        league: config.PREMIER_LEAGUE_ID,
+        season: config.PREMIER_LEAGUE_SEASON,
+        timezone: config.TIMEZONE,
+        from: weekData.startDate,
+        to: weekData.endDate,
+      };
+    }
   } else {
     reqParams = {
       league: config.PREMIER_LEAGUE_ID,
       season: config.PREMIER_LEAGUE_SEASON,
       timezone: config.TIMEZONE,
-      from: params.from,
-      to: params.to,
+      from: params.fixture_from,
+      to: params.fixture_to,
     };
   }
   return new Promise(function (resolve, reject) {
@@ -22,7 +36,7 @@ module.exports.getList = async (params) => {
         params: reqParams,
       })
       .then(function (response) {
-        resolve(response.data);
+        resolve(response.data.response);
       })
       .catch(function (error) {
         reject(error);
@@ -33,9 +47,9 @@ module.exports.getList = async (params) => {
 module.exports.getVenuesList = async (params) => {
   let reqParams = {};
 
-  if (params.id) {
+  if (params.venue_id) {
     reqParams = {
-      id: params.id,
+      id: params.venue_id,
     };
   }
   return new Promise(function (resolve, reject) {
@@ -44,7 +58,7 @@ module.exports.getVenuesList = async (params) => {
         params: reqParams,
       })
       .then(function (response) {
-        resolve(response.data);
+        resolve(response.data.response);
       })
       .catch(function (error) {
         reject(error);

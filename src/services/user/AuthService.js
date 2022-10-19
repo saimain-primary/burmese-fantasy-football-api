@@ -62,6 +62,17 @@ const extractToken = (req) => {
   return null;
 };
 
+module.exports.checkAuth = (req) => {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.split(" ")[0] === "Bearer"
+  ) {
+    return req.headers.authorization.split(" ")[1];
+  } else if (req.query && req.query.token) {
+    return req.query.token;
+  }
+  return null;
+};
 module.exports.getUserIDByToken = (req) => {
   try {
     const data = decodeToken(req);

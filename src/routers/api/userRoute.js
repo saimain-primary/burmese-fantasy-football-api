@@ -5,6 +5,8 @@ const AuthController = require("../../controllers/user/AuthController");
 const TeamController = require("../../controllers/TeamController");
 const FixtureController = require("../../controllers/user/FixtureController");
 const GameWeekController = require("../../controllers/user/GameWeekController");
+const PredictionController = require("../../controllers/user/PredictionController");
+const TournamentController = require("../../controllers/user/TournamentController");
 
 const authMiddleware = require("../../middleware/auth");
 
@@ -39,4 +41,7 @@ router.post(
 
 router.get("/gameweek", GameWeekController.getGameWeek);
 
+router.post("/predict", authMiddleware.check, PredictionController.predict);
+
+router.get("/tournament", TournamentController.index);
 module.exports = router;
