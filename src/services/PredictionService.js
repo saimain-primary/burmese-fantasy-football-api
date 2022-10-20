@@ -41,24 +41,45 @@ module.exports.predict = async (req) => {
         }
         if (doc) {
           console.log(doc);
-          reject({
-            message: `You have already used 2x booster in
+          if (doc.fixture_id != data.fixture_id) {
+            reject({
+              message: `You have already used 2x booster in
               ${doc.home_team.name} vs ${doc.away_team.name} match for Game Week ${doc.week}. You can update your prediction and try again.`,
-          });
+            });
+          } else {
+            PredictionModel.findOneAndUpdate(query, update, options).exec(
+              function (err, result) {
+                if (err) {
+                  reject(err);
+                }
+                resolve(result);
+              }
+            );
+          }
+        } else {
+          PredictionModel.findOneAndUpdate(query, update, options).exec(
+            function (err, result) {
+              if (err) {
+                reject(err);
+              }
+
+              resolve(result);
+            }
+          );
         }
       });
+    } else {
+      PredictionModel.findOneAndUpdate(query, update, options).exec(function (
+        err,
+        result
+      ) {
+        if (err) {
+          reject(err);
+        }
+
+        resolve(result);
+      });
     }
-
-    PredictionModel.findOneAndUpdate(query, update, options).exec(function (
-      err,
-      result
-    ) {
-      if (err) {
-        reject(err);
-      }
-
-      resolve(result);
-    });
   });
 };
 
