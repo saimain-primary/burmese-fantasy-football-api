@@ -18,6 +18,7 @@ module.exports.predict = async (req) => {
     boosted: data.boosted,
     home_team: data.home_team,
     away_team: data.away_team,
+    user_id: mongoose.Types.ObjectId(userId),
   };
 
   const options = {
@@ -28,20 +29,21 @@ module.exports.predict = async (req) => {
 
   return new Promise(function (resolve, reject) {
     // check 2x boost exist
-
+    console.log(data);
     if (data.boosted) {
       PredictionModel.findOne({
         week: data.week,
-        user_id: data.user_id,
+        user_id: mongoose.Types.ObjectId(userId),
         boosted: true,
       }).exec(function (err, doc) {
         if (err) {
           reject(err);
         }
         if (doc) {
-          resolve({
-            flag: "already_boosted",
-            doc,
+          console.log(doc);
+          reject({
+            message: `You have already used 2x booster in
+              ${doc.home_team.name} vs ${doc.away_team.name} match for Game Week ${doc.week}. You can update your prediction and try again.`,
           });
         }
       });
