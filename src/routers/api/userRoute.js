@@ -42,6 +42,7 @@ router.post(
 router.get("/gameweek", GameWeekController.getGameWeek);
 
 router.post("/predict", authMiddleware.check, PredictionController.predict);
+router.post("/calculate-point", PredictionController.calculatePoint);
 
 router.get("/tournament", TournamentController.index);
 module.exports = router;

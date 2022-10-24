@@ -21,6 +21,11 @@ module.exports.getList = async (params) => {
         to: weekData.endDate,
       };
     }
+  } else if (params.fixture_ids) {
+    const ids = params.fixture_ids.join("-");
+    reqParams = {
+      ids: ids,
+    };
   } else {
     reqParams = {
       league: config.PREMIER_LEAGUE_ID,
