@@ -1,5 +1,8 @@
 const { default: mongoose } = require("mongoose");
-const { compareBoostedTotalPoint } = require("../helpers/sort");
+const {
+  compareBoostedTotalPoint,
+  compareAllSumPoint,
+} = require("../helpers/sort");
 const FixtureService = require("./FixtureService");
 const PredictionService = require("./PredictionService");
 
@@ -7,7 +10,6 @@ module.exports.getList = async (req) => {
   const predictions = await PredictionService.getList(req);
   const fixture_ids = [];
 
-  console.log("predictions", predictions);
   predictions.forEach(async (prediction) => {
     fixture_ids.push(prediction.fixture_id);
   });
@@ -26,31 +28,36 @@ module.exports.getList = async (req) => {
     let singlePredictionResult = {
       _id: prediction._id,
       user: prediction.user,
-      home_team: prediction.home_team,
-      away_team: prediction.away_team,
       user_id: prediction.user_id,
-      fixture_id: prediction.fixture_id,
       week: prediction.week,
-      predicts: {
-        home: prediction.home,
-        away: prediction.away,
-        boosted: prediction.boosted,
-      },
-      results: {
-        home: fixtureObj[0].goals.home
-          ? fixtureObj[0].goals.home.toString()
-          : 0,
-        away: fixtureObj[0].goals.away
-          ? fixtureObj[0].goals.away.toString()
-          : 0,
-      },
-      points: {
-        win_lose_draw: 0,
-        goal_different: 0,
-        home_team: 0,
-        away_team: 0,
-        total: 0,
-      },
+
+      points: [
+        {
+          teams: {
+            home_team: prediction.home_team,
+            away_team: prediction.away_team,
+          },
+          fixture_id: prediction.fixture_id,
+          predicts: {
+            home: prediction.home,
+            away: prediction.away,
+            boosted: prediction.boosted,
+          },
+          results: {
+            home: fixtureObj[0].goals.home
+              ? fixtureObj[0].goals.home.toString()
+              : 0,
+            away: fixtureObj[0].goals.away
+              ? fixtureObj[0].goals.away.toString()
+              : 0,
+          },
+          win_lose_draw: 0,
+          goal_different: 0,
+          home_team: 0,
+          away_team: 0,
+          total: 0,
+        },
+      ],
     };
 
     if (fixtureObj[0].fixture.status.short === "FT") {
@@ -88,44 +95,71 @@ module.exports.getList = async (req) => {
       }
 
       if (win_lose_draw_predict === win_lose_draw_result) {
-        singlePredictionResult.points.win_lose_draw = 3;
+        singlePredictionResult.points[0].win_lose_draw = 3;
       }
 
       if (goal_different_predict === goal_different_result) {
-        singlePredictionResult.points.goal_different = 1;
+        singlePredictionResult.points[0].goal_different = 1;
       }
 
       if (parseInt(predictHomeTeam) === parseInt(fixtureHomeTeamResult)) {
-        singlePredictionResult.points.home_team = 1;
+        singlePredictionResult.points[0].home_team = 1;
       }
 
       if (parseInt(predictAwayTeam) === parseInt(fixtureAwayTeamResult)) {
-        singlePredictionResult.points.away_team = 1;
+        singlePredictionResult.points[0].away_team = 1;
       }
 
-      const values = Object.values(singlePredictionResult.points);
-
+      const values = Object.values(singlePredictionResult.points[0]);
+      values.splice(0, 4);
       const sum = values.reduce((accumulator, value) => {
         return accumulator + value;
       }, 0);
 
-      singlePredictionResult.points.total = sum;
+      singlePredictionResult.points[0].total = sum;
 
       if (isPredictionBoosted === true) {
-        singlePredictionResult.points.boosted_total = sum;
-        singlePredictionResult.points.boosted_total =
-          singlePredictionResult.points.boosted_total * 2;
+        singlePredictionResult.points[0].boosted_total = sum;
+        singlePredictionResult.points[0].boosted_total =
+          singlePredictionResult.points[0].boosted_total * 2;
       } else {
-        singlePredictionResult.points.boosted_total = sum;
+        singlePredictionResult.points[0].boosted_total = sum;
       }
 
       predictionResultList.push(singlePredictionResult);
     }
   });
 
+  let finalArr = [];
+
+  predictionResultList.forEach((prediction) => {
+    const findExistingIndex = finalArr.findIndex((p) => {
+      if (p.user_id.equals(prediction.user_id)) {
+        return true;
+      }
+      return false;
+    });
+
+    if (findExistingIndex !== -1) {
+      finalArr[findExistingIndex].points.push(prediction.points[0]);
+    } else {
+      finalArr.push(prediction);
+    }
+  });
+
+  let leaderboardListReturn = [];
+
+  finalArr.forEach((fa) => {
+    const leaderboardSum = Object.values(fa.points);
+    const sum = leaderboardSum.reduce((accumulator, value) => {
+      return accumulator + value.boosted_total;
+    }, 0);
+
+    leaderboardListReturn.push({ ...fa, sum: sum });
+  });
   return new Promise(function (resolve, reject) {
     try {
-      resolve(predictionResultList.sort(compareBoostedTotalPoint));
+      resolve(leaderboardListReturn.sort(compareAllSumPoint));
     } catch (error) {
       console.log("error", error);
       reject(error);
