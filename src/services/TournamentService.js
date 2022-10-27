@@ -33,10 +33,8 @@ module.exports.getIndex = async (req) => {
       }
 
       if (get.includes("predictions")) {
-        if (AuthService.checkAuth(req)) {
-          const predictions = await PredictionService.getList(req);
-          response = { ...response, predictions };
-        }
+        const predictions = await PredictionService.getList(req);
+        response = { ...response, predictions };
       }
 
       resolve(response);

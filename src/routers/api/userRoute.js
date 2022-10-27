@@ -7,8 +7,10 @@ const FixtureController = require("../../controllers/user/FixtureController");
 const GameWeekController = require("../../controllers/user/GameWeekController");
 const PredictionController = require("../../controllers/user/PredictionController");
 const TournamentController = require("../../controllers/user/TournamentController");
+const LeaderboardController = require("../../controllers/user/LeaderboardController");
 
 const authMiddleware = require("../../middleware/auth");
+const { default: axios } = require("axios");
 
 // Authentication
 
@@ -44,5 +46,8 @@ router.get("/gameweek", GameWeekController.getGameWeek);
 router.post("/predict", authMiddleware.check, PredictionController.predict);
 router.post("/calculate-point", PredictionController.calculatePoint);
 
+router.get("/leaderboard", LeaderboardController.getList);
+
 router.get("/tournament", TournamentController.index);
+
 module.exports = router;

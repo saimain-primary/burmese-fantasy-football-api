@@ -29,7 +29,6 @@ module.exports.predict = async (req) => {
 
   return new Promise(function (resolve, reject) {
     // check 2x boost exist
-    console.log(data);
     if (data.boosted) {
       PredictionModel.findOne({
         week: data.week,
@@ -40,7 +39,6 @@ module.exports.predict = async (req) => {
           reject(err);
         }
         if (doc) {
-          console.log(doc);
           if (doc.fixture_id != data.fixture_id) {
             reject({
               message: `You have already used 2x booster in
@@ -87,11 +85,25 @@ module.exports.getList = async (req) => {
   const userId = AuthService.getUserIDByToken(req);
 
   console.log("userId", userId);
+  console.log("query", req.query);
   let filter = {};
   if (req.query.fixture_id) {
     filter = {
       user_id: mongoose.Types.ObjectId(userId),
       fixture_id: req.query.fixture_id,
+    };
+  } else if (req.query.leaderboard) {
+    let data = {};
+
+    if (req.query.user_id) {
+      data = {
+        user_id: mongoose.Types.ObjectId(req.query.user_id),
+      };
+    }
+
+    filter = {
+      ...data,
+      week: req.query.fixture_week,
     };
   } else if (req.query.fixture_week) {
     filter = {
@@ -100,8 +112,28 @@ module.exports.getList = async (req) => {
     };
   }
 
+  console.log("filter ", filter);
+
   return new Promise(function (resolve, reject) {
-    PredictionModel.find(filter)
+    PredictionModel.aggregate([
+      {
+        $match: filter,
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ])
       .then((result) => {
         resolve(result);
       })
@@ -112,26 +144,37 @@ module.exports.getList = async (req) => {
 };
 
 module.exports.calculatePoint = async (req) => {
+  // let userId = AuthService.getUserIDByToken(req);
   let filter = {};
+
   let predictions = null;
+
+  console.log("rr", req.body);
   if (req.body.prediction_id) {
-    filter = req.body.prediction_id;
-    if (Array.isArray(filter)) {
-      filter = { _id: { $in: req.body.prediction_id } };
+    if (Array.isArray(req.body.prediction_id)) {
+      filter = {
+        _id: { $in: req.body.prediction_id },
+        user_id: mongoose.Types.ObjectId(req.body.user_id),
+      };
     } else {
-      filter = { _id: mongoose.Types.ObjectId(filter) };
+      filter = {
+        _id: mongoose.Types.ObjectId(filter),
+        user_id: mongoose.Types.ObjectId(req.body.user_id),
+      };
     }
-  } else if (req.body.week && req.body.user_id) {
+  } else {
     filter = {
       user_id: mongoose.Types.ObjectId(req.body.user_id),
       week: req.body.week,
     };
   }
 
-  console.log("filter", filter);
+  console.log("filter for prediction search", filter);
+
   predictions = await PredictionModel.find(filter);
 
   let fixtures_id = [];
+
   predictions.forEach((prediction) => {
     fixtures_id.push(prediction.fixture_id);
   });
@@ -144,8 +187,6 @@ module.exports.calculatePoint = async (req) => {
     const getFixturePredictionObj = predictions.filter((p) => {
       return p.fixture_id == fixture.fixture.id.toString();
     });
-
-    console.log("fff", fixture);
 
     let singlePredictionResult = {
       _id: getFixturePredictionObj[0]._id,
@@ -169,7 +210,6 @@ module.exports.calculatePoint = async (req) => {
         home_team: 0,
         away_team: 0,
         total: 0,
-        boosted_total: 0,
       },
     };
 
@@ -230,9 +270,9 @@ module.exports.calculatePoint = async (req) => {
       }, 0);
 
       singlePredictionResult.points.total = sum;
-      singlePredictionResult.points.boosted_total = sum;
 
       if (isPredictionBoosted === true) {
+        singlePredictionResult.points.boosted_total = sum;
         singlePredictionResult.points.boosted_total =
           singlePredictionResult.points.boosted_total * 2;
       }
@@ -245,6 +285,7 @@ module.exports.calculatePoint = async (req) => {
     try {
       resolve(predictionResultList);
     } catch (error) {
+      console.log("error", error);
       reject(error);
     }
   });
