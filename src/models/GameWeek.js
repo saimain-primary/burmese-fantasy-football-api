@@ -24,6 +24,11 @@ const GameWeekSchema = new mongoose.Schema(
       default: false,
       required: true,
     },
+    isHomePageCurrent: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
   },
   {
     timestamps: true,

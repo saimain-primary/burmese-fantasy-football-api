@@ -10,6 +10,12 @@ module.exports.getGameWeek = async (params) => {
       };
       where = { ...where, ...data };
     }
+    if (params.is_home_page && params.is_home_page === true) {
+      let data = {
+        isHomePageCurrent: true,
+      };
+      where = { ...where, ...data };
+    }
   }
 
   return new Promise(function (resolve, reject) {
@@ -55,6 +61,28 @@ module.exports.changeCurrentGameWeek = async (params) => {
   return new Promise(function (resolve, reject) {
     const newFilter = { week: params.gameWeek };
     const newUpdate = { isCurrent: true };
+
+    GameWeekDoc.findOneAndUpdate(newFilter, newUpdate, {
+      new: true,
+    })
+      .then(function (response) {
+        resolve(response);
+      })
+      .catch(function (error) {
+        reject(error);
+      });
+  });
+};
+
+module.exports.changeHomeGameWeek = async (params) => {
+  console.log(params);
+  const oldFilter = { isHomePageCurrent: true };
+  const oldUpdate = { isHomePageCurrent: false };
+  await GameWeekDoc.findOneAndUpdate(oldFilter, oldUpdate);
+
+  return new Promise(function (resolve, reject) {
+    const newFilter = { week: params.homePageGameWeek };
+    const newUpdate = { isHomePageCurrent: true };
 
     GameWeekDoc.findOneAndUpdate(newFilter, newUpdate, {
       new: true,

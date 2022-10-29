@@ -12,6 +12,8 @@ const PORT = process.env.PORT;
 const DB_URI = process.env.DB_URI;
 const API_VERSION = process.env.API_VERSION;
 
+const logger = require("morgan");
+
 const corsOptions = {
   origin: "*",
 };
@@ -20,6 +22,7 @@ axios.defaults.baseURL = config.RAPID_BASE_API_URL;
 axios.defaults.headers.common["X-RapidAPI-Key"] = config.RAPID_API_KEY;
 axios.defaults.headers.common["X-RapidAPI-Host"] = config.RAPID_API_HOST;
 
+app.use(logger("dev"));
 app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

@@ -33,6 +33,9 @@ const PredictionSchema = new mongoose.Schema(
       default: false,
       required: true,
     },
+    details: {
+      type: Object,
+    }
   },
   {
     timestamps: true,

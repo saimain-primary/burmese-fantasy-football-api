@@ -73,12 +73,12 @@ module.exports.checkAuth = (req) => {
   }
   return null;
 };
+
 module.exports.getUserIDByToken = (req) => {
   try {
     const data = decodeToken(req);
     return data.id;
   } catch (e) {
-    console.log(e);
     return null;
   }
 };

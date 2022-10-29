@@ -26,6 +26,13 @@ module.exports.getList = async (params) => {
     reqParams = {
       ids: ids,
     };
+  } else if (params.recent) {
+    reqParams = {
+      league: config.PREMIER_LEAGUE_ID,
+      season: config.PREMIER_LEAGUE_SEASON,
+      timezone: config.TIMEZONE,
+      last: params.recent,
+    };
   } else {
     reqParams = {
       league: config.PREMIER_LEAGUE_ID,

@@ -8,7 +8,7 @@ const GameWeekController = require("../../controllers/user/GameWeekController");
 const PredictionController = require("../../controllers/user/PredictionController");
 const TournamentController = require("../../controllers/user/TournamentController");
 const LeaderboardController = require("../../controllers/user/LeaderboardController");
-
+const HomeController = require("../../controllers/user/HomeController");
 const authMiddleware = require("../../middleware/auth");
 const { default: axios } = require("axios");
 
@@ -29,12 +29,22 @@ router.get("/teams", TeamController.getTeamList);
 router.get("/fixture", FixtureController.getFixtureList);
 router.get("/venues", FixtureController.getVenuesDetail);
 router.get("/current-gameweek", GameWeekController.currentGameWeek);
+router.get("/home-gameweek", GameWeekController.homeGameWeek);
+
+router.get("/home", HomeController.index);
 
 router.post(
   "/current-gameweek",
   authMiddleware.checkAdmin,
   GameWeekController.changeCurrentGameWeek
 );
+
+router.post(
+  "/home-gameweek",
+  authMiddleware.checkAdmin,
+  GameWeekController.changeHomeGameWeek
+);
+
 router.post(
   "/gameweek",
   authMiddleware.checkAdmin,
