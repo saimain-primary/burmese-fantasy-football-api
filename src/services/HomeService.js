@@ -188,6 +188,11 @@ module.exports.getIndex = async (req) => {
 
   const lastMatchDate = new Date(last_matches.fixture.timestamp);
   const nowDate = new Date();
+
+  const days = lastMatchDate.getDay() - nowDate.getDay();
+  const hours = lastMatchDate.getHours() - nowDate.getHours();
+  const mins = lastMatchDate.getMinutes() - nowDate.getMinutes();
+
   return new Promise(function (resolve, reject) {
     try {
       let returnData = {
@@ -199,9 +204,9 @@ module.exports.getIndex = async (req) => {
           finished_matches.length
         ),
         deadline: {
-          days: lastMatchDate.getDay() - nowDate.getDay(),
-          hours: lastMatchDate.getHours() - nowDate.getHours(),
-          mins: lastMatchDate.getMinutes() - nowDate.getMinutes(),
+          days: days > 0 ? days : 0,
+          hours: hours > 0 ? hours : 0,
+          mins: mins > 0 ? mins : 0,
         },
       };
       resolve(returnData);
