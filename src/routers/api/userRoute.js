@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const router = Router();
+const multer = require("multer");
 
 const AuthController = require("../../controllers/user/AuthController");
 const TeamController = require("../../controllers/TeamController");
@@ -11,7 +12,14 @@ const LeaderboardController = require("../../controllers/user/LeaderboardControl
 const HomeController = require("../../controllers/user/HomeController");
 const authMiddleware = require("../../middleware/auth");
 const { default: axios } = require("axios");
-
+const { storageEngine, checkFileType } = require("../../helpers/imageUpload");
+const uploadProfile = multer({
+  storage: storageEngine,
+  limits: { fileSize: 1000000 },
+  fileFilter: (req, file, cb) => {
+    checkFileType(file, cb);
+  },
+});
 // Authentication
 
 router.post("/register", AuthController.Register);
@@ -22,6 +30,12 @@ router.post("/forget-password", AuthController.ForgetPassword);
 router.post("/reset-password", AuthController.ResetPassword);
 
 router.get("/me", authMiddleware.check, AuthController.getMe);
+router.put("/me", authMiddleware.check, AuthController.updateAccount);
+router.post(
+  "/profile-image",
+  uploadProfile.single("profile"),
+  AuthController.updateProfileImage
+);
 
 router.get("/premier-league-teams", TeamController.getPremierLeagueTeamList);
 router.get("/teams", TeamController.getTeamList);
@@ -57,6 +71,7 @@ router.post("/predict", authMiddleware.check, PredictionController.predict);
 router.post("/calculate-point", PredictionController.calculatePoint);
 
 router.get("/leaderboard", LeaderboardController.getList);
+router.get("/leaderboard-detail/:id", LeaderboardController.getDetail);
 
 router.get("/tournament", TournamentController.index);
 

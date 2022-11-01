@@ -43,7 +43,7 @@ module.exports.VerifyOTP = async (req, res) => {
         response.flag = "verify_success";
         response.message = "Successfully verified";
         response.developer_message = "Successfully verified the user account";
-        response.results = { ...result, token: loginData.token };
+        response.results = { ...result._doc, token: loginData.token };
         return res.status(200).json(response);
       })
       .catch((e) => {
@@ -111,6 +111,58 @@ module.exports.getMe = async (req, res) => {
     response.message = "Login Failed";
     response.developer_message = "Something went wrong in user login";
     response.results = error;
+    return res.status(200).json(response);
+  }
+};
+
+module.exports.updateAccount = async (req, res) => {
+  let response = {};
+  try {
+    await UserService.updateUser(req.body)
+      .then((result) => {
+        response.code = 200;
+        response.message = "Successfully updated";
+        response.developer_message = "";
+        response.results = result;
+      })
+      .catch((e) => {
+        response.code = 401;
+        response.message = e.message;
+        response.developer_message = "Something went wrong in updating user";
+        response.results = e;
+      });
+    return res.status(200).json(response);
+  } catch (error) {
+    response.code = 401;
+    response.message = error;
+    response.developer_message = "Something went wrong in user updating";
+    response.results = {};
+    return res.status(200).json(response);
+  }
+};
+
+module.exports.updateProfileImage = async (req, res) => {
+  let response = {};
+  try {
+    await UserService.updateProfileImage(req)
+      .then((result) => {
+        response.code = 200;
+        response.message = "Successfully updated";
+        response.developer_message = "";
+        response.results = result;
+      })
+      .catch((e) => {
+        response.code = 401;
+        response.message = e.message;
+        response.developer_message = "Something went wrong in updating user";
+        response.results = e;
+      });
+    return res.status(200).json(response);
+  } catch (error) {
+    response.code = 401;
+    response.message = error;
+    response.developer_message = "Something went wrong in user updating";
+    response.results = {};
     return res.status(200).json(response);
   }
 };

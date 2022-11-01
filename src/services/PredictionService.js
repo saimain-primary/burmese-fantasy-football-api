@@ -2,6 +2,7 @@ const AuthService = require("../services/user/AuthService");
 const PredictionModel = require("../models/Prediction");
 const { default: mongoose } = require("mongoose");
 const FixtureService = require("../services/FixtureService");
+
 module.exports.predict = async (req) => {
   const userId = AuthService.getUserIDByToken(req);
   const data = req.body;
@@ -288,5 +289,52 @@ module.exports.calculatePoint = async (req) => {
       console.log("error", error);
       reject(error);
     }
+  });
+};
+
+module.exports.getListByUserID = async (req) => {
+  console.log("query", req.query);
+  let filter = {};
+  let data = {};
+
+  if (req.params.id) {
+    data = {
+      user_id: mongoose.Types.ObjectId(req.params.id),
+    };
+  }
+
+  filter = {
+    ...data,
+    week: req.query.fixture_week,
+  };
+
+  console.log("filter ", filter);
+
+  return new Promise(function (resolve, reject) {
+    PredictionModel.aggregate([
+      {
+        $match: filter,
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ])
+      .then((result) => {
+        resolve(result);
+      })
+      .catch((e) => {
+        reject(e);
+      });
   });
 };
