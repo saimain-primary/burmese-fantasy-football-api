@@ -198,7 +198,7 @@ module.exports.getIndex = async (req) => {
       let returnData = {
         highest_score: leaderboardListReturn.sort(compareAllSumPoint)[0],
         your_score: your_score,
-        average_score: calculateAverage(leaderboardListReturn),
+        average_score: Math.round(calculateAverage(leaderboardListReturn)),
         recent_matches: sortedFixtureList.slice(
           finished_matches.length - 5,
           finished_matches.length
