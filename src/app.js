@@ -17,7 +17,7 @@ const API_VERSION = process.env.API_VERSION;
 const logger = require("morgan");
 
 const corsOptions = {
-  origin: "*",
+  origin: ['https://next.bffsports.com'],
 };
 
 axios.defaults.baseURL = config.RAPID_BASE_API_URL;
