@@ -17,7 +17,9 @@ const API_VERSION = process.env.API_VERSION;
 const logger = require("morgan");
 
 const corsOptions = {
-  origin: ["*", "https://bffsports.com"],
+  origin: ["*", "https://bffsports.com","localhost","localhost:8080","localhost:8001"],
+  credentials: true,
+  origin: true,
 };
 
 axios.defaults.baseURL = config.RAPID_BASE_API_URL;
@@ -26,8 +28,10 @@ axios.defaults.headers.common["X-RapidAPI-Host"] = config.RAPID_API_HOST;
 
 app.use(logger("dev"));
 app.use(cors(corsOptions));
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 
 app.get("/uploads/*", function (req, res) {
   console.log(req.url);

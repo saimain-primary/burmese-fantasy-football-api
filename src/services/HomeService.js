@@ -204,9 +204,14 @@ module.exports.getIndex = async (req) => {
         })[0];
       }
 
-      const nowDate = convertTZ(new Date(),"Asia/Yangon");
-      const lastDate = convertTZ(last_matches.fixture.date,"Asia/Yangon");
+      const nowDate = convertTZ(new Date(), "Asia/Yangon");
+      let lastDate = null;
       
+      if (last_matches) {
+       lastDate = convertTZ(last_matches.fixture.date,"Asia/Yangon");
+      } else {
+        lastDate = new Date();
+      }
       
       var seconds = Math.floor((lastDate - (nowDate))/1000);
       var minutes = Math.floor(seconds/60);

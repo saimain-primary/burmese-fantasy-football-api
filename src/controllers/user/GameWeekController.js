@@ -82,7 +82,7 @@ module.exports.addGameWeek = async (req, res) => {
 module.exports.getGameWeek = async (req, res) => {
   let response = {};
   try {
-    await GameWeekService.getGameWeek()
+    await GameWeekService.getGameWeek(req.query)
       .then((result) => {
         response.code = 200;
         response.message = "Game Week List";

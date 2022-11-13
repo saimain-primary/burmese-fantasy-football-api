@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 
 const GameWeekSchema = new mongoose.Schema(
   {
+    league: {
+      type: String,
+    },
     name: {
       type: String,
       required: true,

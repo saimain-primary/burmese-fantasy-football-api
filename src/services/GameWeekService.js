@@ -3,7 +3,15 @@ const GameWeekDoc = require("../models/GameWeek");
 module.exports.getGameWeek = async (params) => {
   let where = {};
 
+
   if (params) {
+    if (params.league) {
+      let data = {
+        league: params.league
+      };
+      where = { ...where, ...data };
+    }
+
     if (params.is_current && params.is_current === true) {
       let data = {
         isCurrent: true,
@@ -17,6 +25,7 @@ module.exports.getGameWeek = async (params) => {
       where = { ...where, ...data };
     }
   }
+
 
   return new Promise(function (resolve, reject) {
     GameWeekDoc.find(where)
@@ -34,7 +43,8 @@ module.exports.getGameWeek = async (params) => {
 
 module.exports.saveGameWeek = async (params) => {
   let saveData = {
-    name: "Game Week " + params.gameWeek,
+    league: params.league,
+    name: params.gameWeek,
     week: params.gameWeek,
     startDate: params.startDate,
     endDate: params.endDate,

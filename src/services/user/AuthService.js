@@ -140,3 +140,38 @@ module.exports.verifyOTP = async (data) => {
       });
   });
 };
+
+module.exports.authenticateAdmin = async (data) => {
+   let { phone, password } = data;
+  return new Promise(function (resolve, reject) {
+    UserService.getOne({ phone: phone })
+      .then((result) => {
+        if (result) {
+          if (result.isAdmin === true) {
+            if (passwordHelper.ComparePassword(password, result.password)) {
+              let userJWT = {
+                phone: phone,
+                name: result.name,
+                id: result._id,
+                isAdmin: result.isAdmin,
+              };
+              const jwtToken = generateToken(userJWT);
+              resolve({
+                token: jwtToken,
+                user: result,
+              });
+            } else {
+              reject("Phone number or password is incorrect");
+            }
+          } else {
+            reject("You are not admin");
+          }
+        } else {
+          reject("Your phone number do not have and account");
+        }
+      })
+      .catch((e) => {
+        reject(e);
+      });
+  });
+}

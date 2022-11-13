@@ -11,7 +11,7 @@ module.exports.getList = async (params) => {
   } else if (params.fixture_week) {
     // get start and end from week
     const weekData = await GameWeekDoc.findOne({ week: params.fixture_week });
-    console.log("weekdata", weekData);
+      console.log("weekdata", weekData);
     if (weekData) {
       reqParams = {
         league: config.PREMIER_LEAGUE_ID,
