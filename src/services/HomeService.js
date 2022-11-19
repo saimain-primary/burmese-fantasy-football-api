@@ -28,6 +28,7 @@ module.exports.getIndex = async (req) => {
       });
 
       const fixtureList = await FixtureService.getList({
+        league_id:  req.query.league_id ?? "39",
         fixture_week: req.query.fixture_week,
       });
 
