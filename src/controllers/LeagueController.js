@@ -1,54 +1,53 @@
-const TournamentService = require("../../services/TournamentService");
+const LeagueService = require("../services/LeagueService");
 
-module.exports.index = async (req, res) => {
+module.exports.getList = async (req, res) => {
   let response = {};
   try {
-    await TournamentService.getIndex(req)
+    await LeagueService.getList(req.query)
       .then((result) => {
         response.code = 200;
-        response.message = "Tournament Page Data";
-        response.developer_message = "Getting tournament page data";
+        response.message = "League List";
+        response.developer_message = "";
         response.results = result;
       })
       .catch((e) => {
         response.code = 401;
         response.message = e.message;
-        response.developer_message = "Something went wrong in tournament data";
+        response.developer_message = "Something went wrong in fetching league";
         response.results = e;
       });
     return res.status(200).json(response);
   } catch (error) {
     response.code = 401;
     response.message = error;
-    response.developer_message = "Something went wrong in tournament data";
+    response.developer_message = "Something went wrong in fetching leagues";
     response.results = {};
     return res.status(200).json(response);
   }
 };
 
-
-module.exports.indexCustom = async (req, res) => {
+module.exports.getDetail = async (req, res) => {
   let response = {};
   try {
-    await TournamentService.getIndexCustom(req)
+    await LeagueService.getDetail(req.params.id)
       .then((result) => {
         response.code = 200;
-        response.message = "Tournament Page Data";
-        response.developer_message = "Getting tournament page data";
+        response.message = "League Detail";
+        response.developer_message = "";
         response.results = result;
       })
       .catch((e) => {
         response.code = 401;
         response.message = e.message;
-        response.developer_message = "Something went wrong in tournament data";
+        response.developer_message = "Something went wrong in fetching league";
         response.results = e;
       });
     return res.status(200).json(response);
   } catch (error) {
     response.code = 401;
     response.message = error;
-    response.developer_message = "Something went wrong in tournament data";
+    response.developer_message = "Something went wrong in fetching leagues";
     response.results = {};
     return res.status(200).json(response);
   }
-};
+}

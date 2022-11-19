@@ -2,6 +2,7 @@ const AuthService = require("../services/user/AuthService");
 const PredictionModel = require("../models/Prediction");
 const { default: mongoose } = require("mongoose");
 const FixtureService = require("../services/FixtureService");
+const config = require("../config");
 
 module.exports.predict = async (req) => {
   const userId = AuthService.getUserIDByToken(req);
@@ -10,6 +11,7 @@ module.exports.predict = async (req) => {
   const query = {
     fixture_id: data.fixture_id,
     user_id: mongoose.Types.ObjectId(userId),
+    league_id: data.league_id,
   };
 
   const update = {
@@ -143,6 +145,74 @@ module.exports.getList = async (req) => {
       });
   });
 };
+
+module.exports.getListCustom = async (req) => {
+  const userId = AuthService.getUserIDByToken(req);
+
+  console.log("userId", userId);
+  console.log("query", req.query);
+  let filter = {
+      league_id: req.query.league_id,
+  };
+
+  if (req.query.fixture_id) {
+    filter = {
+      ...filter,
+      user_id: mongoose.Types.ObjectId(userId),
+      fixture_id: req.query.fixture_id,
+    };
+  } else if (req.query.leaderboard) {
+    let data = {};
+
+    if (req.query.user_id) {
+      data = {
+        user_id: mongoose.Types.ObjectId(req.query.user_id),
+      };
+    }
+
+    filter = {
+      ...filter,
+      ...data,
+      week: req.query.fixture_week,
+    };
+  } else if (req.query.fixture_week) {
+    filter = {
+      ...filter,
+      user_id: mongoose.Types.ObjectId(userId),
+      week: req.query.fixture_week,
+    };
+  }
+
+  console.log("filter zz ", filter);
+
+  return new Promise(function (resolve, reject) {
+    PredictionModel.aggregate([
+      {
+        $match: filter,
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ])
+      .then((result) => {
+        resolve(result);
+      })
+      .catch((e) => {
+        reject(e);
+      });
+  });
+}
 
 module.exports.calculatePoint = async (req) => {
   // let userId = AuthService.getUserIDByToken(req);

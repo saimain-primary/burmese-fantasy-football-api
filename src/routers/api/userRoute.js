@@ -10,6 +10,8 @@ const PredictionController = require("../../controllers/user/PredictionControlle
 const TournamentController = require("../../controllers/user/TournamentController");
 const LeaderboardController = require("../../controllers/user/LeaderboardController");
 const HomeController = require("../../controllers/user/HomeController");
+const LeagueController = require("../../controllers/LeagueController");
+
 const authMiddleware = require("../../middleware/auth");
 const { default: axios } = require("axios");
 const { storageEngine, checkFileType } = require("../../helpers/imageUpload");
@@ -41,6 +43,7 @@ router.get("/premier-league-teams", TeamController.getPremierLeagueTeamList);
 router.get("/teams", TeamController.getTeamList);
 
 router.get("/fixture", FixtureController.getFixtureList);
+router.get("/fixture-custom", FixtureController.getFixtureListCustom);
 router.get("/venues", FixtureController.getVenuesDetail);
 router.get("/current-gameweek", GameWeekController.currentGameWeek);
 router.get("/home-gameweek", GameWeekController.homeGameWeek);
@@ -74,5 +77,9 @@ router.get("/leaderboard", LeaderboardController.getList);
 router.get("/leaderboard-detail/:id", LeaderboardController.getDetail);
 
 router.get("/tournament", TournamentController.index);
+router.get("/tournament-custom", TournamentController.indexCustom);
+
+router.get('/leagues', LeagueController.getList);
+router.get('/leagues/:id', LeagueController.getDetail);
 
 module.exports = router;

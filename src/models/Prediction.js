@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 
 const PredictionSchema = new mongoose.Schema(
   {
+    league_id : {
+      type: String
+    },
     user_id: {
       type: "ObjectId",
       required: true,
