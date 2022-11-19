@@ -32,7 +32,7 @@ module.exports.getTeamListCustom = async (params) => {
   return new Promise(function (resolve, reject) {
 
     let reqParams = {
-      league: "39",
+      league: params.league_id ?? "39",
       season: config.CURRENT_SEASON,
     };
     
