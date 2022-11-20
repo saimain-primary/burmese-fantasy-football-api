@@ -56,8 +56,8 @@ module.exports.getList = async (req) => {
     };
 
     if (fixtureObj[0].fixture.status.short === "FT") {
-      const fixtureHomeTeamResult = fixtureObj[0].goals.home.toString();
-      const fixtureAwayTeamResult = fixtureObj[0].goals.away.toString();
+      const fixtureHomeTeamResult = fixtureObj[0] ? fixtureObj[0].goals.home.toString() : "0";
+      const fixtureAwayTeamResult = fixtureObj[0] ? fixtureObj[0].goals.away.toString() : "0";
       const predictHomeTeam = prediction.home;
       const predictAwayTeam = prediction.away;
       const isPredictionBoosted = prediction.boosted;
