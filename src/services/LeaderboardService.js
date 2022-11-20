@@ -39,10 +39,10 @@ module.exports.getList = async (req) => {
             boosted: prediction.boosted,
           },
           results: {
-            home: fixtureObj[0].goals.home
+            home: fixtureObj[0]
               ? fixtureObj[0].goals.home.toString()
               : 0,
-            away: fixtureObj[0].goals.away
+            away: fixtureObj[0]
               ? fixtureObj[0].goals.away.toString()
               : 0,
           },
