@@ -15,15 +15,28 @@ module.exports.getList = async (params) => {
 };
 
 module.exports.getDetail = async (league_id) => {
+
   return new Promise(function (resolve, reject) {
-    GameWeekDoc.find({
-      league : league_id
-    })
-      .then(function (response) {
-        resolve(response);
+    if (league_id === 39) {
+      GameWeekDoc.find({
+        league : null
       })
-      .catch(function (error) {
-        reject(error);
-      });
+        .then(function (response) {
+          resolve(response);
+        })
+        .catch(function (error) {
+          reject(error);
+        });
+    } else {
+      GameWeekDoc.find({
+        league : league_id
+      })
+        .then(function (response) {
+          resolve(response);
+        })
+        .catch(function (error) {
+          reject(error);
+        });
+    }
   });
 }
