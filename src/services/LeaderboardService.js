@@ -7,10 +7,11 @@ const FixtureService = require("./FixtureService");
 const PredictionService = require("./PredictionService");
 const UserService = require("./user/UserService");
 module.exports.getList = async (req) => {
-  const predictions = await PredictionService.getList(req);
+  const predictions = await PredictionService.getListCustom(req);
 
-  const fixtureList = await FixtureService.getList({
+  const fixtureList = await FixtureService.getListCustom({
     fixture_week: req.query.fixture_week,
+    league_id: req.query.league_id,
   });
 
   let predictionResultList = [];
@@ -19,6 +20,7 @@ module.exports.getList = async (req) => {
     let fixtureObj = fixtureList.filter((f) => {
       return f.fixture.id === parseInt(prediction.fixture_id);
     });
+
 
     let singlePredictionResult = {
       _id: prediction._id,
@@ -55,74 +57,76 @@ module.exports.getList = async (req) => {
       ],
     };
 
-    if (fixtureObj[0].fixture.status.short === "FT") {
-      const fixtureHomeTeamResult = fixtureObj[0] ? fixtureObj[0].goals.home.toString() : "0";
-      const fixtureAwayTeamResult = fixtureObj[0] ? fixtureObj[0].goals.away.toString() : "0";
-      const predictHomeTeam = prediction.home;
-      const predictAwayTeam = prediction.away;
-      const isPredictionBoosted = prediction.boosted;
-
-      let win_lose_draw_result = "";
-      let win_lose_draw_predict = "";
-      let goal_different_result =
-        parseInt(fixtureHomeTeamResult) - parseInt(fixtureAwayTeamResult);
-      let goal_different_predict =
-        parseInt(predictHomeTeam) - parseInt(predictAwayTeam);
-
-      if (parseInt(predictHomeTeam) === parseInt(predictAwayTeam)) {
-        win_lose_draw_predict = "draw";
-      } else if (parseInt(predictHomeTeam) > parseInt(predictAwayTeam)) {
-        win_lose_draw_predict = "home_team_win";
-      } else if (parseInt(predictHomeTeam) < parseInt(predictAwayTeam)) {
-        win_lose_draw_predict = "away_team_win";
+    if (fixtureObj[0]) {
+      if (fixtureObj[0].fixture.status.short === "FT") {
+        const fixtureHomeTeamResult = fixtureObj[0] ? fixtureObj[0].goals.home.toString() : "0";
+        const fixtureAwayTeamResult = fixtureObj[0] ? fixtureObj[0].goals.away.toString() : "0";
+        const predictHomeTeam = prediction.home;
+        const predictAwayTeam = prediction.away;
+        const isPredictionBoosted = prediction.boosted;
+  
+        let win_lose_draw_result = "";
+        let win_lose_draw_predict = "";
+        let goal_different_result =
+          parseInt(fixtureHomeTeamResult) - parseInt(fixtureAwayTeamResult);
+        let goal_different_predict =
+          parseInt(predictHomeTeam) - parseInt(predictAwayTeam);
+  
+        if (parseInt(predictHomeTeam) === parseInt(predictAwayTeam)) {
+          win_lose_draw_predict = "draw";
+        } else if (parseInt(predictHomeTeam) > parseInt(predictAwayTeam)) {
+          win_lose_draw_predict = "home_team_win";
+        } else if (parseInt(predictHomeTeam) < parseInt(predictAwayTeam)) {
+          win_lose_draw_predict = "away_team_win";
+        }
+  
+        if (parseInt(fixtureHomeTeamResult) === parseInt(fixtureAwayTeamResult)) {
+          win_lose_draw_result = "draw";
+        } else if (
+          parseInt(fixtureHomeTeamResult) > parseInt(fixtureAwayTeamResult)
+        ) {
+          win_lose_draw_result = "home_team_win";
+        } else if (
+          parseInt(fixtureHomeTeamResult) < parseInt(fixtureAwayTeamResult)
+        ) {
+          win_lose_draw_result = "away_team_win";
+        }
+  
+        if (win_lose_draw_predict === win_lose_draw_result) {
+          singlePredictionResult.points[0].win_lose_draw = 3;
+        }
+  
+        if (goal_different_predict === goal_different_result) {
+          singlePredictionResult.points[0].goal_different = 1;
+        }
+  
+        if (parseInt(predictHomeTeam) === parseInt(fixtureHomeTeamResult)) {
+          singlePredictionResult.points[0].home_team = 1;
+        }
+  
+        if (parseInt(predictAwayTeam) === parseInt(fixtureAwayTeamResult)) {
+          singlePredictionResult.points[0].away_team = 1;
+        }
+  
+        const values = Object.values(singlePredictionResult.points[0]);
+        values.splice(0, 4);
+        const sum = values.reduce((accumulator, value) => {
+          return accumulator + value;
+        }, 0);
+  
+        singlePredictionResult.points[0].total = sum;
+  
+        if (isPredictionBoosted === true) {
+          singlePredictionResult.points[0].boosted_total = sum;
+          singlePredictionResult.points[0].boosted_total =
+            singlePredictionResult.points[0].boosted_total * 2;
+        } else {
+          singlePredictionResult.points[0].boosted_total = sum;
+        }
+  
+        predictionResultList.push(singlePredictionResult);
       }
-
-      if (parseInt(fixtureHomeTeamResult) === parseInt(fixtureAwayTeamResult)) {
-        win_lose_draw_result = "draw";
-      } else if (
-        parseInt(fixtureHomeTeamResult) > parseInt(fixtureAwayTeamResult)
-      ) {
-        win_lose_draw_result = "home_team_win";
-      } else if (
-        parseInt(fixtureHomeTeamResult) < parseInt(fixtureAwayTeamResult)
-      ) {
-        win_lose_draw_result = "away_team_win";
-      }
-
-      if (win_lose_draw_predict === win_lose_draw_result) {
-        singlePredictionResult.points[0].win_lose_draw = 3;
-      }
-
-      if (goal_different_predict === goal_different_result) {
-        singlePredictionResult.points[0].goal_different = 1;
-      }
-
-      if (parseInt(predictHomeTeam) === parseInt(fixtureHomeTeamResult)) {
-        singlePredictionResult.points[0].home_team = 1;
-      }
-
-      if (parseInt(predictAwayTeam) === parseInt(fixtureAwayTeamResult)) {
-        singlePredictionResult.points[0].away_team = 1;
-      }
-
-      const values = Object.values(singlePredictionResult.points[0]);
-      values.splice(0, 4);
-      const sum = values.reduce((accumulator, value) => {
-        return accumulator + value;
-      }, 0);
-
-      singlePredictionResult.points[0].total = sum;
-
-      if (isPredictionBoosted === true) {
-        singlePredictionResult.points[0].boosted_total = sum;
-        singlePredictionResult.points[0].boosted_total =
-          singlePredictionResult.points[0].boosted_total * 2;
-      } else {
-        singlePredictionResult.points[0].boosted_total = sum;
-      }
-
-      predictionResultList.push(singlePredictionResult);
-    }
+ }
   });
 
   let finalArr = [];

@@ -60,6 +60,8 @@ module.exports.getList = async (params) => {
 };
 
 module.exports.getListCustom = async (params) => {
+
+  console.log('log from a', params);
   let reqParams = {
     timezone: config.TIMEZONE,
     season: config.CURRENT_SEASON,
