@@ -21,7 +21,6 @@ module.exports.getList = async (req) => {
       return f.fixture.id === parseInt(prediction.fixture_id);
     });
 
-    console.log('fffobj', fixtureObj);
 
     if (fixtureObj[0]) {
       let singlePredictionResult = {
@@ -43,8 +42,8 @@ module.exports.getList = async (req) => {
               boosted: prediction.boosted,
             },
             results: {
-              home: fixtureObj[0] ? fixtureObj[0].goals.home.toString() : 0,
-              away: fixtureObj[0] ? fixtureObj[0].goals.away.toString() : 0,
+              home: fixtureObj[0].goals.home ? fixtureObj[0].goals.home.toString() : 0,
+              away: fixtureObj[0].goals.away ? fixtureObj[0].goals.away.toString() : 0,
             },
             win_lose_draw: 0,
             goal_different: 0,
@@ -56,10 +55,10 @@ module.exports.getList = async (req) => {
       };
 
       if (fixtureObj[0].fixture.status.short === "FT") {
-        const fixtureHomeTeamResult = fixtureObj[0]
+        const fixtureHomeTeamResult = fixtureObj[0].goals.home
           ? fixtureObj[0].goals.home.toString()
           : "0";
-        const fixtureAwayTeamResult = fixtureObj[0]
+        const fixtureAwayTeamResult = fixtureObj[0].goals.home
           ? fixtureObj[0].goals.away.toString()
           : "0";
         const predictHomeTeam = prediction.home;
