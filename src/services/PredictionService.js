@@ -35,6 +35,7 @@ module.exports.predict = async (req) => {
     if (data.boosted) {
       PredictionModel.findOne({
         week: data.week,
+        league_id: data.league_id,
         user_id: mongoose.Types.ObjectId(userId),
         boosted: true,
       }).exec(function (err, doc) {
