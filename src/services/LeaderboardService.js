@@ -171,9 +171,10 @@ module.exports.getList = async (req) => {
 module.exports.getDetail = async (req) => {
   let returnData = {};
   const predictions = await PredictionService.getListByUserID(req);
-
-  const fixtureList = await FixtureService.getList({
+  console.log('prediction lis', predictions);
+  const fixtureList = await FixtureService.getListCustom({
     fixture_week: req.query.fixture_week,
+    league_id: req.query.league_id
   });
 
   let predictionResultList = {
@@ -188,7 +189,8 @@ module.exports.getDetail = async (req) => {
       let fixtureObj = fixtureList.filter((f) => {
         return f.fixture.id === parseInt(prediction.fixture_id);
       });
-
+      if (fixtureObj[0]) {
+        
       let singlePredictionResult = {
         _id: prediction._id,
         week: prediction.week,
@@ -291,6 +293,7 @@ module.exports.getDetail = async (req) => {
         }
 
         predictionResultList.results.push(singlePredictionResult);
+      }
       }
     });
 

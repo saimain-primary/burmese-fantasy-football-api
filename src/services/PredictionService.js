@@ -377,6 +377,7 @@ module.exports.getListByUserID = async (req) => {
   filter = {
     ...data,
     week: req.query.fixture_week,
+    league_id: req.query.league_id
   };
 
   console.log("filter ", filter);
