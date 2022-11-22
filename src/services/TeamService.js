@@ -28,21 +28,27 @@ module.exports.getPremierLeagueTeamList = async (params) => {
 };
 
 module.exports.getTeamListCustom = async (params) => {
-  
   return new Promise(function (resolve, reject) {
+    let reqParams = {};
+    if (params.leaderboard) {
+      reqParams = {
+        league: "39",
+        season: config.CURRENT_SEASON,
+      };
+    } else {
+      reqParams = {
+        league: params.league_id ?? "39",
+        season: config.CURRENT_SEASON,
+      };
+    }
 
-    let reqParams = {
-      league: params.league_id ?? "39",
-      season: config.CURRENT_SEASON,
-    };
-    
     if (params.team_id) {
       reqParams = {
         ...reqParams,
         id: params.team_id,
       };
-    } 
-    
+    }
+
     axios
       .get("/teams", {
         params: reqParams,
