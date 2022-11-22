@@ -17,26 +17,14 @@ module.exports.getList = async (params) => {
 module.exports.getDetail = async (league_id) => {
 
   return new Promise(function (resolve, reject) {
-    if (league_id == 39) {
-      GameWeekDoc.find({
-        league : null
+    GameWeekDoc.find({
+      league : league_id
+    })
+      .then(function (response) {
+        resolve(response);
       })
-        .then(function (response) {
-          resolve(response);
-        })
-        .catch(function (error) {
-          reject(error);
-        });
-    } else {
-      GameWeekDoc.find({
-        league : league_id
-      })
-        .then(function (response) {
-          resolve(response);
-        })
-        .catch(function (error) {
-          reject(error);
-        });
-    }
+      .catch(function (error) {
+        reject(error);
+      });
   });
 }
