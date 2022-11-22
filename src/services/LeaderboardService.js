@@ -21,57 +21,56 @@ module.exports.getList = async (req) => {
       return f.fixture.id === parseInt(prediction.fixture_id);
     });
 
-
-    let singlePredictionResult = {
-      _id: prediction._id,
-      user: prediction.user,
-      user_id: prediction.user_id,
-      week: prediction.week,
-
-      points: [
-        {
-          teams: {
-            home_team: prediction.home_team,
-            away_team: prediction.away_team,
-          },
-          fixture_id: prediction.fixture_id,
-          predicts: {
-            home: prediction.home,
-            away: prediction.away,
-            boosted: prediction.boosted,
-          },
-          results: {
-            home: fixtureObj[0]
-              ? fixtureObj[0].goals.home.toString()
-              : 0,
-            away: fixtureObj[0]
-              ? fixtureObj[0].goals.away.toString()
-              : 0,
-          },
-          win_lose_draw: 0,
-          goal_different: 0,
-          home_team: 0,
-          away_team: 0,
-          total: 0,
-        },
-      ],
-    };
-
     if (fixtureObj[0]) {
+      let singlePredictionResult = {
+        _id: prediction._id,
+        user: prediction.user,
+        user_id: prediction.user_id,
+        week: prediction.week,
+
+        points: [
+          {
+            teams: {
+              home_team: prediction.home_team,
+              away_team: prediction.away_team,
+            },
+            fixture_id: prediction.fixture_id,
+            predicts: {
+              home: prediction.home,
+              away: prediction.away,
+              boosted: prediction.boosted,
+            },
+            results: {
+              home: fixtureObj[0] ? fixtureObj[0].goals.home.toString() : 0,
+              away: fixtureObj[0] ? fixtureObj[0].goals.away.toString() : 0,
+            },
+            win_lose_draw: 0,
+            goal_different: 0,
+            home_team: 0,
+            away_team: 0,
+            total: 0,
+          },
+        ],
+      };
+
       if (fixtureObj[0].fixture.status.short === "FT") {
-        const fixtureHomeTeamResult = fixtureObj[0] ? fixtureObj[0].goals.home.toString() : "0";
-        const fixtureAwayTeamResult = fixtureObj[0] ? fixtureObj[0].goals.away.toString() : "0";
+        const fixtureHomeTeamResult = fixtureObj[0]
+          ? fixtureObj[0].goals.home.toString()
+          : "0";
+        const fixtureAwayTeamResult = fixtureObj[0]
+          ? fixtureObj[0].goals.away.toString()
+          : "0";
         const predictHomeTeam = prediction.home;
         const predictAwayTeam = prediction.away;
         const isPredictionBoosted = prediction.boosted;
-  
+
         let win_lose_draw_result = "";
         let win_lose_draw_predict = "";
         let goal_different_result =
           parseInt(fixtureHomeTeamResult) - parseInt(fixtureAwayTeamResult);
         let goal_different_predict =
           parseInt(predictHomeTeam) - parseInt(predictAwayTeam);
-  
+
         if (parseInt(predictHomeTeam) === parseInt(predictAwayTeam)) {
           win_lose_draw_predict = "draw";
         } else if (parseInt(predictHomeTeam) > parseInt(predictAwayTeam)) {
@@ -79,8 +78,10 @@ module.exports.getList = async (req) => {
         } else if (parseInt(predictHomeTeam) < parseInt(predictAwayTeam)) {
           win_lose_draw_predict = "away_team_win";
         }
-  
-        if (parseInt(fixtureHomeTeamResult) === parseInt(fixtureAwayTeamResult)) {
+
+        if (
+          parseInt(fixtureHomeTeamResult) === parseInt(fixtureAwayTeamResult)
+        ) {
           win_lose_draw_result = "draw";
         } else if (
           parseInt(fixtureHomeTeamResult) > parseInt(fixtureAwayTeamResult)
@@ -91,31 +92,31 @@ module.exports.getList = async (req) => {
         ) {
           win_lose_draw_result = "away_team_win";
         }
-  
+
         if (win_lose_draw_predict === win_lose_draw_result) {
           singlePredictionResult.points[0].win_lose_draw = 3;
         }
-  
+
         if (goal_different_predict === goal_different_result) {
           singlePredictionResult.points[0].goal_different = 1;
         }
-  
+
         if (parseInt(predictHomeTeam) === parseInt(fixtureHomeTeamResult)) {
           singlePredictionResult.points[0].home_team = 1;
         }
-  
+
         if (parseInt(predictAwayTeam) === parseInt(fixtureAwayTeamResult)) {
           singlePredictionResult.points[0].away_team = 1;
         }
-  
+
         const values = Object.values(singlePredictionResult.points[0]);
         values.splice(0, 4);
         const sum = values.reduce((accumulator, value) => {
           return accumulator + value;
         }, 0);
-  
+
         singlePredictionResult.points[0].total = sum;
-  
+
         if (isPredictionBoosted === true) {
           singlePredictionResult.points[0].boosted_total = sum;
           singlePredictionResult.points[0].boosted_total =
@@ -123,10 +124,10 @@ module.exports.getList = async (req) => {
         } else {
           singlePredictionResult.points[0].boosted_total = sum;
         }
-  
+
         predictionResultList.push(singlePredictionResult);
       }
- }
+    }
   });
 
   let finalArr = [];
