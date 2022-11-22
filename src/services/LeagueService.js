@@ -17,7 +17,7 @@ module.exports.getList = async (params) => {
 module.exports.getDetail = async (league_id) => {
 
   return new Promise(function (resolve, reject) {
-    if (league_id === 39) {
+    if (league_id == 39) {
       GameWeekDoc.find({
         league : null
       })
