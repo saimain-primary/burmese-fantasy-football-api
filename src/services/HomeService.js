@@ -20,19 +20,20 @@ module.exports.getIndex = async (req) => {
   return new Promise(async function (resolve, reject) {
     try {
       const userId = AuthService.getUserIDByToken(req);
-      const predictions = await PredictionService.getList(req);
+      const predictions = await PredictionService.getListCustom(req);
       const fixture_ids = [];
 
       predictions.forEach(async (prediction) => {
         fixture_ids.push(prediction.fixture_id);
       });
 
-      const fixtureList = await FixtureService.getList({
-        league_id:  req.query.league_id ?? "39",
+      const fixtureList = await FixtureService.getListCustom({
+        league_id:  req.query.league_id,
         fixture_week: req.query.fixture_week,
       });
 
-      const nextFixtureList = await FixtureService.getList({
+      const nextFixtureList = await FixtureService.getListCustom({
+        league_id:  req.query.league_id,
         fixture_week: req.query.current_week,
       });
 
