@@ -21,6 +21,8 @@ module.exports.getList = async (req) => {
       return f.fixture.id === parseInt(prediction.fixture_id);
     });
 
+    console.log('fffobj', fixtureObj);
+
     if (fixtureObj[0]) {
       let singlePredictionResult = {
         _id: prediction._id,
