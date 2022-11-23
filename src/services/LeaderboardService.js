@@ -14,6 +14,10 @@ module.exports.getList = async (req) => {
     league_id: req.query.league_id,
   });
 
+  console.log('prediction list', predictions);
+  console.log("fixture list", fixtureList);
+
+
   let predictionResultList = [];
 
   predictions.forEach(async (prediction) => {

@@ -32,10 +32,14 @@ module.exports.getIndex = async (req) => {
         fixture_week: req.query.fixture_week,
       });
 
+      console.log('fixture list', fixtureList);
+
       const nextFixtureList = await FixtureService.getListCustom({
         league_id:  req.query.league_id,
         fixture_week: req.query.current_week,
       });
+
+      console.log('next fixture list', nextFixtureList);
 
       const sortedFixtureList = fixtureList.sort(
         (a, b) => new Date(a.fixture.date) - new Date(b.fixture.date)
