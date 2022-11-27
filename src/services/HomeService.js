@@ -87,10 +87,10 @@ module.exports.getIndex = async (req) => {
                 boosted: prediction.boosted,
               },
               results: {
-                home: fixtureObj[0]
+                home: fixtureObj[0].goals.home
                   ? fixtureObj[0].goals.home.toString()
                   : 0,
-                away: fixtureObj[0]
+                away: fixtureObj[0].goals.away
                   ? fixtureObj[0].goals.away.toString()
                   : 0,
               },
