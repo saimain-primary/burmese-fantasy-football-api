@@ -68,42 +68,43 @@ module.exports.getIndex = async (req) => {
           return f.fixture.id === parseInt(prediction.fixture_id);
         });
 
-        let singlePredictionResult = {
-          _id: prediction._id,
-          user: prediction.user,
-          user_id: prediction.user_id,
-          week: prediction.week,
-
-          points: [
-            {
-              teams: {
-                home_team: prediction.home_team,
-                away_team: prediction.away_team,
-              },
-              fixture_id: prediction.fixture_id,
-              predicts: {
-                home: prediction.home,
-                away: prediction.away,
-                boosted: prediction.boosted,
-              },
-              results: {
-                home: fixtureObj[0].goals.home
-                  ? fixtureObj[0].goals.home.toString()
-                  : 0,
-                away: fixtureObj[0].goals.away
-                  ? fixtureObj[0].goals.away.toString()
-                  : 0,
-              },
-              win_lose_draw: 0,
-              goal_different: 0,
-              home_team: 0,
-              away_team: 0,
-              total: 0,
-            },
-          ],
-        };
+     
 
         if (fixtureObj[0]) {
+          let singlePredictionResult = {
+            _id: prediction._id,
+            user: prediction.user,
+            user_id: prediction.user_id,
+            week: prediction.week,
+  
+            points: [
+              {
+                teams: {
+                  home_team: prediction.home_team,
+                  away_team: prediction.away_team,
+                },
+                fixture_id: prediction.fixture_id,
+                predicts: {
+                  home: prediction.home,
+                  away: prediction.away,
+                  boosted: prediction.boosted,
+                },
+                results: {
+                  home: fixtureObj[0].goals.home
+                    ? fixtureObj[0].goals.home.toString()
+                    : 0,
+                  away: fixtureObj[0].goals.away
+                    ? fixtureObj[0].goals.away.toString()
+                    : 0,
+                },
+                win_lose_draw: 0,
+                goal_different: 0,
+                home_team: 0,
+                away_team: 0,
+                total: 0,
+              },
+            ],
+          };
           if (fixtureObj[0].fixture.status.short === "FT") {
             const fixtureHomeTeamResult = fixtureObj[0].goals.home.toString();
             const fixtureAwayTeamResult = fixtureObj[0].goals.away.toString();
