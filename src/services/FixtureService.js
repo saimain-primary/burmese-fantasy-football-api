@@ -121,6 +121,7 @@ module.exports.getListCustom = async (params) => {
         params: reqParams,
       })
       .then(function (response) {
+        console.log('response from fixture custom', response.data.response);
         resolve(response.data.response);
       })
       .catch(function (error) {
@@ -151,3 +152,22 @@ module.exports.getVenuesList = async (params) => {
       });
   });
 };
+
+module.exports.getDetail = async (id) => {
+  return new Promise(function (resolve, reject) {
+    axios
+      .get("/fixtures", {
+        params: {
+          id: id
+        },
+      })
+      .then(function (response) {
+        console.log('response from fixture detail', response.data.response);
+        resolve(response.data.response);
+      })
+      .catch(function (error) {
+        console.log(error);
+        reject(error);
+      });
+  });
+}
