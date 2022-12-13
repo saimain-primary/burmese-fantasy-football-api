@@ -5,8 +5,11 @@ const FixtureService = require("../services/FixtureService");
 const config = require("../config");
 
 module.exports.predict = async (req) => {
+
   const userId = AuthService.getUserIDByToken(req);
   const data = req.body;
+  console.log("🚀 ~ file: PredictionService.js:11 ~ module.exports.predict= ~ data", data)
+
 
   const query = {
     fixture_id: data.fixture_id,
