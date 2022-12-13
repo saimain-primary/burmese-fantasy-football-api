@@ -21,6 +21,8 @@ module.exports.predict = async (req) => {
     boosted: data.boosted,
     home_team: data.home_team,
     away_team: data.away_team,
+    player_of_the_match: data.player_of_the_match,
+    winner: data.winner,
     user_id: mongoose.Types.ObjectId(userId),
   };
 

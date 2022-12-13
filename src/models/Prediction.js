@@ -31,6 +31,12 @@ const PredictionSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    player_of_the_match: {
+      type: String,
+    },
+    winner: {
+      type: String
+    },
     boosted: {
       type: Boolean,
       default: false,
