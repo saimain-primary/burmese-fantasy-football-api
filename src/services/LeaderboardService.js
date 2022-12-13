@@ -257,6 +257,10 @@ module.exports.getDetail = async (req) => {
     fixture_week: req.query.fixture_week,
     league_id: req.query.league_id,
   });
+  
+  console.log("🚀 ~ file: LeaderboardService.js:260 ~ module.exports.getDetail= ~ fixtureList", fixtureList)
+  
+  
 
   let predictionResultList = {
     user: null,
