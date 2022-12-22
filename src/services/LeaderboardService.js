@@ -26,7 +26,7 @@ module.exports.getList = async (req) => {
 
   
     // if (fixtureObj[0]) {
-    //   if (fixtureObj[0].fixture.status.short === "FT") {
+    //   if (fixtureObj[0].fixture.status.long === "Match Finished") {
     //     const fixtureHomeTeamResult = fixtureObj[0].goals.home
     //       ? fixtureObj[0].goals.home.toString()
     //       : "0";
@@ -138,7 +138,7 @@ module.exports.getList = async (req) => {
         ],
       };
   
-      if (fixtureObj[0].fixture.status.short === "FT") {
+      if (fixtureObj[0].fixture.status.long === "Match Finished") {
         const fixtureHomeTeamResult = (fixtureObj[0].goals.home + fixtureObj[0].score.penalty.home).toString();
         const fixtureAwayTeamResult = (fixtureObj[0].goals.away + fixtureObj[0].score.penalty.away).toString();
         
@@ -261,6 +261,7 @@ module.exports.getDetail = async (req) => {
   console.log("🚀 ~ file: LeaderboardService.js:260 ~ module.exports.getDetail= ~ fixtureList", fixtureList)
   
   
+  
 
   let predictionResultList = {
     user: null,
@@ -307,7 +308,8 @@ module.exports.getDetail = async (req) => {
           ],
         };
 
-        if (fixtureObj[0].fixture.status.short === "FT") {
+        if (fixtureObj[0].fixture.status.long === "Match Finished") {
+          console.log('finished fix', fixtureObj[0].fixture.status);
           const fixtureHomeTeamResult = fixtureObj[0].goals.home.toString();
           const fixtureAwayTeamResult = fixtureObj[0].goals.away.toString();
           const predictHomeTeam = prediction.home;

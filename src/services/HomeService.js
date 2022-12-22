@@ -105,7 +105,7 @@ module.exports.getIndex = async (req) => {
               },
             ],
           };
-          if (fixtureObj[0].fixture.status.short === "FT") {
+          if (fixtureObj[0].fixture.status.long === "Match Finished") {
             const fixtureHomeTeamResult = fixtureObj[0].goals.home.toString();
             const fixtureAwayTeamResult = fixtureObj[0].goals.away.toString();
             const predictHomeTeam = prediction.home;
