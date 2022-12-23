@@ -6,25 +6,39 @@ const {
 const FixtureService = require("./FixtureService");
 const PredictionService = require("./PredictionService");
 const UserService = require("./user/UserService");
+const PlayerService = require("./PlayerService");
+
 module.exports.getList = async (req) => {
   const predictions = await PredictionService.getListCustom(req);
-
   const fixtureList = await FixtureService.getListCustom({
     fixture_week: req.query.fixture_week,
     league_id: req.query.league_id,
   });
 
   console.log("prediction list", predictions);
-  console.log("fixture list", fixtureList);
 
   let predictionResultList = [];
 
+  let fixtureIdList = [];
+
+  predictions.map((p) => {
+    if (!fixtureIdList.includes(p.fixture_id)) {
+      fixtureIdList.push(p.fixture_id);
+    }
+  });
+
+  let playerStatistics = await PlayerService.getPlayerStatistic({
+    fixtures: fixtureIdList.join(","),
+  });
+
+  
   predictions.forEach(async (prediction) => {
+
+    console.log('p', prediction);
     let fixtureObj = fixtureList.filter((f) => {
       return f.fixture.id === parseInt(prediction.fixture_id);
     });
 
-  
     // if (fixtureObj[0]) {
     //   if (fixtureObj[0].fixture.status.long === "Match Finished") {
     //     const fixtureHomeTeamResult = fixtureObj[0].goals.home
@@ -102,13 +116,23 @@ module.exports.getList = async (req) => {
     //   }
     // }
 
+    let fixturePlayers = playerStatistics.filter((ps) => {
+      return ps.fixtureId == fixtureObj[0].fixture.id;
+    });
+
+  let playerOfTheMatchResult = fixturePlayers.sort( 
+      function(a, b) {
+         return b.statistics[0].games.rating - a.statistics[0].games.rating ;
+      }
+    )[0].player;
+
+    
     if (fixtureObj[0]) {
       let singlePredictionResult = {
         _id: prediction._id,
         user: prediction.user,
         user_id: prediction.user_id,
         week: prediction.week,
-  
         points: [
           {
             teams: {
@@ -120,6 +144,8 @@ module.exports.getList = async (req) => {
               home: prediction.home,
               away: prediction.away,
               boosted: prediction.boosted,
+              winner: prediction.winner,
+              player_of_the_match : prediction.player_of_the_match
             },
             results: {
               home: fixtureObj[0].goals.home
@@ -128,23 +154,43 @@ module.exports.getList = async (req) => {
               away: fixtureObj[0].goals.away
                 ? fixtureObj[0].goals.away.toString()
                 : 0,
+              winner:
+                (fixtureObj[0].teams.home.winner &&
+                  fixtureObj[0].teams.home.id) ||
+                (fixtureObj[0].teams.away.winner &&
+                  fixtureObj[0].teams.away.id),
+              player_of_the_match : playerOfTheMatchResult
             },
+            score: fixtureObj[0].score,
             win_lose_draw: 0,
             goal_different: 0,
             home_team: 0,
             away_team: 0,
+            winner: 0,
+            player_of_the_match: 0,
+            underdog_bonus: 0,
             total: 0,
           },
         ],
       };
-  
+
       if (fixtureObj[0].fixture.status.long === "Match Finished") {
-        const fixtureHomeTeamResult = (fixtureObj[0].goals.home + fixtureObj[0].score.penalty.home).toString();
-        const fixtureAwayTeamResult = (fixtureObj[0].goals.away + fixtureObj[0].score.penalty.away).toString();
-        
+        const fixtureHomeTeamResult = (
+          fixtureObj[0].goals.home + fixtureObj[0].score.extratime.home
+        ).toString();
+        const fixtureAwayTeamResult = (
+          fixtureObj[0].goals.away + fixtureObj[0].score.extratime.away
+        ).toString();
+        const winnerTeamResult =
+          (fixtureObj[0].teams.home.winner && fixtureObj[0].teams.home.id) ||
+          (fixtureObj[0].teams.away.winner && fixtureObj[0].teams.away.id);
         const predictHomeTeam = prediction.home;
         const predictAwayTeam = prediction.away;
         const isPredictionBoosted = prediction.boosted;
+        const winnerTeamWhenTie = prediction.winner;
+        const playerOfTheMatch = prediction.player_of_the_match;
+
+     
 
         let win_lose_draw_result = "";
         let win_lose_draw_predict = "";
@@ -191,8 +237,25 @@ module.exports.getList = async (req) => {
           singlePredictionResult.points[0].away_team = 1;
         }
 
+        if (winnerTeamResult) {
+          if (winnerTeamWhenTie == winnerTeamResult) {
+            singlePredictionResult.points[0].winner = 3;
+          }
+        }
+
+        // const fixtureDetailResponse = await FixtureService.getDetail(fixtureObj[0].fixture.id);
+        // console.log("🚀 ~ file: LeaderboardService.js:212 ~ predictions.forEach ~ fixtureDetail", fixtureDetailResponse)
+
+        if (playerOfTheMatch == playerOfTheMatchResult.id) {
+          singlePredictionResult.points[0].player_of_the_match = 2;
+        }
+
+        // if (true) {
+        //   singlePredictionResult.points[0].underdog_bonus = 2;
+        // }
+
         const values = Object.values(singlePredictionResult.points[0]);
-        values.splice(0, 4);
+        values.splice(0, 5);
         const sum = values.reduce((accumulator, value) => {
           return accumulator + value;
         }, 0);
@@ -257,11 +320,11 @@ module.exports.getDetail = async (req) => {
     fixture_week: req.query.fixture_week,
     league_id: req.query.league_id,
   });
-  
-  console.log("🚀 ~ file: LeaderboardService.js:260 ~ module.exports.getDetail= ~ fixtureList", fixtureList)
-  
-  
-  
+
+  console.log(
+    "🚀 ~ file: LeaderboardService.js:260 ~ module.exports.getDetail= ~ fixtureList",
+    fixtureList
+  );
 
   let predictionResultList = {
     user: null,
@@ -272,6 +335,7 @@ module.exports.getDetail = async (req) => {
     predictionResultList.user = predictions[0].user;
 
     predictions.forEach(async (prediction) => {
+      console.log("p", prediction);
       let fixtureObj = fixtureList.filter((f) => {
         return f.fixture.id === parseInt(prediction.fixture_id);
       });
@@ -280,8 +344,8 @@ module.exports.getDetail = async (req) => {
           _id: prediction._id,
           week: prediction.week,
           teams: {
-            home_team: prediction.home_team,
-            away_team: prediction.away_team,
+            home_team: fixtureObj[0].teams.home,
+            away_team: fixtureObj[0].teams.away,
           },
           fixture: fixtureObj[0].fixture,
           predicts: {
@@ -297,6 +361,7 @@ module.exports.getDetail = async (req) => {
               ? fixtureObj[0].goals.away.toString()
               : 0,
           },
+          score: fixtureObj[0].score,
           points: [
             {
               win_lose_draw: 0,
@@ -309,9 +374,12 @@ module.exports.getDetail = async (req) => {
         };
 
         if (fixtureObj[0].fixture.status.long === "Match Finished") {
-          console.log('finished fix', fixtureObj[0].fixture.status);
-          const fixtureHomeTeamResult = fixtureObj[0].goals.home.toString();
-          const fixtureAwayTeamResult = fixtureObj[0].goals.away.toString();
+          const fixtureHomeTeamResult = (
+            fixtureObj[0].goals.home + fixtureObj[0].score.extratime.home
+          ).toString();
+          const fixtureAwayTeamResult = (
+            fixtureObj[0].goals.away + fixtureObj[0].score.extratime.away
+          ).toString();
           const predictHomeTeam = prediction.home;
           const predictAwayTeam = prediction.away;
           const isPredictionBoosted = prediction.boosted;

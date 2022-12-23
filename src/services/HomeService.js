@@ -64,11 +64,11 @@ module.exports.getIndex = async (req) => {
       let predictionResultList = [];
 
       predictions.forEach(async (prediction) => {
+        console.log('pre', prediction);
         let fixtureObj = fixtureList.filter((f) => {
           return f.fixture.id === parseInt(prediction.fixture_id);
         });
 
-     
 
         if (fixtureObj[0]) {
           let singlePredictionResult = {
@@ -159,10 +159,11 @@ module.exports.getIndex = async (req) => {
   
             const values = Object.values(singlePredictionResult.points[0]);
             values.splice(0, 4);
+
             const sum = values.reduce((accumulator, value) => {
               return accumulator + value;
             }, 0);
-  
+
             singlePredictionResult.points[0].total = sum;
   
             if (isPredictionBoosted === true) {
@@ -177,6 +178,10 @@ module.exports.getIndex = async (req) => {
           }
         }
       });
+      console.log("🚀 ~ file: HomeService.js:181 ~ predictions.forEach ~ prediction", prediction)
+      console.log("🚀 ~ file: HomeService.js:181 ~ predictions.forEach ~ prediction", prediction)
+      console.log("🚀 ~ file: HomeService.js:181 ~ predictions.forEach ~ prediction", prediction)
+      console.log("🚀 ~ file: HomeService.js:181 ~ predictions.forEach ~ prediction", prediction)
 
       let finalArr = [];
 

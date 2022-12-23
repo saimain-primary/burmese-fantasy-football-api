@@ -11,7 +11,6 @@ module.exports.getList = async (params) => {
   } else if (params.fixture_week) {
     // get start and end from week
     const weekData = await GameWeekDoc.findOne({ week: params.fixture_week });
-    console.log("weekdata", weekData);
     if (weekData) {
       reqParams = {
         league: config.PREMIER_LEAGUE_ID,
@@ -43,7 +42,6 @@ module.exports.getList = async (params) => {
     };
   }
 
-  console.log("req params", reqParams);
 
   return new Promise(function (resolve, reject) {
     axios
@@ -61,7 +59,6 @@ module.exports.getList = async (params) => {
 
 module.exports.getListCustom = async (params) => {
 
-  console.log('log from a', params);
   let reqParams = {
     timezone: config.TIMEZONE,
     season: config.CURRENT_SEASON,
@@ -113,7 +110,6 @@ module.exports.getListCustom = async (params) => {
     };
   } 
 
-  console.log("req params", reqParams);
 
   return new Promise(function (resolve, reject) {
     axios
@@ -121,7 +117,6 @@ module.exports.getListCustom = async (params) => {
         params: reqParams,
       })
       .then(function (response) {
-        console.log('response from fixture custom', response.data.response);
         resolve(response.data.response);
       })
       .catch(function (error) {
@@ -162,7 +157,6 @@ module.exports.getDetail = async (id) => {
         },
       })
       .then(function (response) {
-        console.log('response from fixture detail', response.data.response);
         resolve(response.data.response);
       })
       .catch(function (error) {

@@ -11,7 +11,7 @@ const TournamentController = require("../../controllers/user/TournamentControlle
 const LeaderboardController = require("../../controllers/user/LeaderboardController");
 const HomeController = require("../../controllers/user/HomeController");
 const LeagueController = require("../../controllers/LeagueController");
-
+const PlayerController = require('../../controllers/user/PlayerController');
 const authMiddleware = require("../../middleware/auth");
 const { default: axios } = require("axios");
 const { storageEngine, checkFileType } = require("../../helpers/imageUpload");
@@ -83,7 +83,7 @@ router.get("/tournament-custom", TournamentController.indexCustom);
 router.get('/leagues', LeagueController.getList);
 router.get('/leagues/:id', LeagueController.getDetail);
 
-
+router.get('/players/statistics', PlayerController.getPlayerStatistics);
 
 
 module.exports = router;

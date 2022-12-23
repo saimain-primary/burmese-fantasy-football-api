@@ -155,8 +155,7 @@ module.exports.getList = async (req) => {
 module.exports.getListCustom = async (req) => {
   const userId = AuthService.getUserIDByToken(req);
 
-  console.log("userId", userId);
-  console.log("query", req.query);
+
   let filter = {
       league_id: req.query.league_id,
   };
@@ -189,7 +188,6 @@ module.exports.getListCustom = async (req) => {
     };
   }
 
-  console.log("filter zz ", filter);
 
   return new Promise(function (resolve, reject) {
     PredictionModel.aggregate([
