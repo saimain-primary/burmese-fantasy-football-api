@@ -124,7 +124,7 @@ module.exports.getList = async (req) => {
       function(a, b) {
          return b.statistics[0].games.rating - a.statistics[0].games.rating ;
       }
-    )[0].player;
+    )[0]?.player;
 
     
     if (fixtureObj[0]) {
