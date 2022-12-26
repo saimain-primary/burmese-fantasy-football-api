@@ -246,10 +246,11 @@ module.exports.getList = async (req) => {
         // const fixtureDetailResponse = await FixtureService.getDetail(fixtureObj[0].fixture.id);
         // console.log("🚀 ~ file: LeaderboardService.js:212 ~ predictions.forEach ~ fixtureDetail", fixtureDetailResponse)
 
+      if(playerOfTheMatchResult){
         if (playerOfTheMatch == playerOfTheMatchResult.id) {
           singlePredictionResult.points[0].player_of_the_match = 2;
         }
-
+      }
         // if (true) {
         //   singlePredictionResult.points[0].underdog_bonus = 2;
         // }
