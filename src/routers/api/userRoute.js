@@ -11,16 +11,16 @@ const TournamentController = require("../../controllers/user/TournamentControlle
 const LeaderboardController = require("../../controllers/user/LeaderboardController");
 const HomeController = require("../../controllers/user/HomeController");
 const LeagueController = require("../../controllers/LeagueController");
-const PlayerController = require('../../controllers/user/PlayerController');
+const PlayerController = require("../../controllers/user/PlayerController");
 const authMiddleware = require("../../middleware/auth");
 const { default: axios } = require("axios");
 const { storageEngine, checkFileType } = require("../../helpers/imageUpload");
 const uploadProfile = multer({
-  storage: storageEngine,
-  limits: { fileSize: 1000000 },
-  fileFilter: (req, file, cb) => {
-    checkFileType(file, cb);
-  },
+    storage: storageEngine,
+    limits: { fileSize: 1000000 },
+    fileFilter: (req, file, cb) => {
+        checkFileType(file, cb);
+    },
 });
 // Authentication
 
@@ -34,9 +34,9 @@ router.post("/reset-password", AuthController.ResetPassword);
 router.get("/me", authMiddleware.check, AuthController.getMe);
 router.put("/me", authMiddleware.check, AuthController.updateAccount);
 router.post(
-  "/profile-image",
-  uploadProfile.single("profile"),
-  AuthController.updateProfileImage
+    "/profile-image",
+    uploadProfile.single("profile"),
+    AuthController.updateProfileImage
 );
 
 router.get("/premier-league-teams", TeamController.getPremierLeagueTeamList);
@@ -52,21 +52,21 @@ router.get("/home-gameweek", GameWeekController.homeGameWeek);
 router.get("/home", HomeController.index);
 
 router.post(
-  "/current-gameweek",
-  authMiddleware.checkAdmin,
-  GameWeekController.changeCurrentGameWeek
+    "/current-gameweek",
+    authMiddleware.checkAdmin,
+    GameWeekController.changeCurrentGameWeek
 );
 
 router.post(
-  "/home-gameweek",
-  authMiddleware.checkAdmin,
-  GameWeekController.changeHomeGameWeek
+    "/home-gameweek",
+    authMiddleware.checkAdmin,
+    GameWeekController.changeHomeGameWeek
 );
 
 router.post(
-  "/gameweek",
-  authMiddleware.checkAdmin,
-  GameWeekController.addGameWeek
+    "/gameweek",
+    authMiddleware.checkAdmin,
+    GameWeekController.addGameWeek
 );
 
 router.get("/gameweek", GameWeekController.getGameWeek);
@@ -80,10 +80,11 @@ router.get("/leaderboard-detail/:id", LeaderboardController.getDetail);
 router.get("/tournament", TournamentController.index);
 router.get("/tournament-custom", TournamentController.indexCustom);
 
-router.get('/leagues', LeagueController.getList);
-router.get('/leagues/:id', LeagueController.getDetail);
+router.get("/leagues", LeagueController.getList);
+router.get("/leagues/:id", LeagueController.getDetail);
 
-router.get('/players/statistics', PlayerController.getPlayerStatistics);
+router.get("/players/statistics", PlayerController.getPlayerStatistics);
 
+router.get("/overall-leaderboard", LeaderboardController.getOverallLeader);
 
 module.exports = router;

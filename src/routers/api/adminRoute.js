@@ -12,4 +12,6 @@ router.post('/admin/login', AuthController.login);
 router.get('/admin/users', authMiddleware.checkAdmin, UserController.getList);
 
 router.get('/admin/players/statistics', authMiddleware.checkAdmin, PlayerController.fetchPlayerStatisticByFixture);
+
 module.exports = router;
+
