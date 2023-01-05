@@ -33,14 +33,19 @@ module.exports.getList = async (req) => {
         let fixtureObj = fixtureList.filter((f) => {
             return f.fixture.id === parseInt(prediction.fixture_id);
         });
+        let playerOfTheMatchResult = "000000";
+        let fixturePlayers = [];
+        if (fixtureObj) {
+            fixturePlayers = playerStatistics.filter((ps) => {
+                return ps.fixtureId == fixtureObj[0].fixture.id;
+            });
 
-        let fixturePlayers = playerStatistics.filter((ps) => {
-            return ps.fixtureId == fixtureObj[0].fixture.id;
-        });
-
-        let playerOfTheMatchResult = fixturePlayers.sort(function (a, b) {
-            return b.statistics[0].games.rating - a.statistics[0].games.rating;
-        })[0]?.player;
+            playerOfTheMatchResult = fixturePlayers.sort(function (a, b) {
+                return (
+                    b.statistics[0].games.rating - a.statistics[0].games.rating
+                );
+            })[0]?.player;
+        }
 
         if (fixtureObj[0]) {
             let singlePredictionResult = {
@@ -285,9 +290,11 @@ module.exports.getDetail = async (req) => {
     let returnData = {};
     const predictions = await PredictionService.getListByUserID(req);
     const allPredictions = await PredictionService.getAllList(req);
-    console.log("🚀 ~ file: LeaderboardService.js:287 ~ module.exports.getDetail= ~ predictions", allPredictions.length);
+    console.log(
+        "🚀 ~ file: LeaderboardService.js:287 ~ module.exports.getDetail= ~ predictions",
+        allPredictions.length
+    );
 
-    
     const fixtureList = await FixtureService.getListCustom({
         fixture_week: req.query.fixture_week,
         league_id: req.query.league_id,
@@ -388,7 +395,10 @@ module.exports.getDetail = async (req) => {
                     const fixturePredictions = allPredictions.filter((p) => {
                         return p.fixture_id == fixtureObj[0].fixture.id;
                     });
-                    console.log("🚀 ~ file: LeaderboardService.js:387 ~ fixturePredictions ~ fixturePredictions", fixturePredictions)
+                    console.log(
+                        "🚀 ~ file: LeaderboardService.js:387 ~ fixturePredictions ~ fixturePredictions",
+                        fixturePredictions
+                    );
 
                     const predictionsStringArr = fixturePredictions.map(
                         (fp) => {
