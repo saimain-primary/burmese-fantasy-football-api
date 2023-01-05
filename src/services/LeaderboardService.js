@@ -596,15 +596,19 @@ module.exports.getOverall = async (req) => {
             return f.fixture.id === parseInt(prediction.fixture_id);
         });
 
-        let fixturePlayers = playerStatistics.filter((ps) => {
-            return ps.fixtureId == fixtureObj[0].fixture.id;
-        });
-
-        let playerOfTheMatchResult = fixturePlayers.sort(function (a, b) {
-            return b.statistics[0].games.rating - a.statistics[0].games.rating;
-        })[0]?.player;
+      let fixturePlayers  = [];
+      let playerOfTheMatchResult = 000000
 
         if (fixtureObj[0]) {
+
+          fixturePlayers = playerStatistics.filter((ps) => {
+                return ps.fixtureId == fixtureObj[0].fixture.id;
+            });
+    
+            playerOfTheMatchResult = fixturePlayers.sort(function (a, b) {
+                return b.statistics[0].games.rating - a.statistics[0].games.rating;
+            })[0]?.player;
+
             let singlePredictionResult = {
                 _id: prediction._id,
                 user: prediction.user,
