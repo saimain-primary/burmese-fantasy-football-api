@@ -390,7 +390,6 @@ module.exports.getDetail = async (req) => {
                     });
                     console.log("🚀 ~ file: LeaderboardService.js:387 ~ fixturePredictions ~ fixturePredictions", fixturePredictions)
 
-
                     const predictionsStringArr = fixturePredictions.map(
                         (fp) => {
                             return fp.home + ":" + fp.away;
@@ -830,7 +829,7 @@ module.exports.getOverall = async (req) => {
     });
     return new Promise(function (resolve, reject) {
         try {
-            resolve(leaderboardListReturn.sort(compareAllSumPoint));
+            resolve(leaderboardListReturn.sort(compareAllSumPoint).splice(20));
         } catch (error) {
             console.log("error", error);
             reject(error);
