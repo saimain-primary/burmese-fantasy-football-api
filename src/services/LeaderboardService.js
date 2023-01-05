@@ -35,7 +35,7 @@ module.exports.getList = async (req) => {
         });
         let playerOfTheMatchResult = "000000";
         let fixturePlayers = [];
-        if (fixtureObj) {
+        if (fixtureObj[0]) {
             fixturePlayers = playerStatistics.filter((ps) => {
                 return ps.fixtureId == fixtureObj[0].fixture.id;
             });
