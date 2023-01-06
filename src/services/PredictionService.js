@@ -367,7 +367,6 @@ module.exports.calculatePoint = async (req) => {
 };
 
 module.exports.getListByUserID = async (req) => {
-  console.log("query", req.query);
   let filter = {};
   let data = {};
 
@@ -413,3 +412,45 @@ module.exports.getListByUserID = async (req) => {
       });
   });
 };
+
+module.exports.getAllList = async (req) => {
+  let filter = {};
+  let data = {};
+
+  filter = {
+    ...data,
+    week: req.query.fixture_week,
+    league_id: req.query.league_id
+  };
+
+
+  return new Promise(function (resolve, reject) {
+    PredictionModel.aggregate([
+      {
+        $match: filter,
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ])
+      .then((result) => {
+        resolve(result);
+      })
+      .catch((e) => {
+        reject(e);
+      });
+  });
+};
+
+

@@ -33,14 +33,19 @@ module.exports.getList = async (req) => {
         let fixtureObj = fixtureList.filter((f) => {
             return f.fixture.id === parseInt(prediction.fixture_id);
         });
+        let playerOfTheMatchResult = "000000";
+        let fixturePlayers = [];
+        if (fixtureObj[0]) {
+            fixturePlayers = playerStatistics.filter((ps) => {
+                return ps.fixtureId == fixtureObj[0].fixture.id;
+            });
 
-        let fixturePlayers = playerStatistics.filter((ps) => {
-            return ps.fixtureId == fixtureObj[0].fixture.id;
-        });
-
-        let playerOfTheMatchResult = fixturePlayers.sort(function (a, b) {
-            return b.statistics[0].games.rating - a.statistics[0].games.rating;
-        })[0]?.player;
+            playerOfTheMatchResult = fixturePlayers.sort(function (a, b) {
+                return (
+                    b.statistics[0].games.rating - a.statistics[0].games.rating
+                );
+            })[0]?.player;
+        }
 
         if (fixtureObj[0]) {
             let singlePredictionResult = {
@@ -284,7 +289,12 @@ module.exports.getList = async (req) => {
 module.exports.getDetail = async (req) => {
     let returnData = {};
     const predictions = await PredictionService.getListByUserID(req);
-    console.log("prediction lis", predictions);
+    const allPredictions = await PredictionService.getAllList(req);
+    console.log(
+        "🚀 ~ file: LeaderboardService.js:287 ~ module.exports.getDetail= ~ predictions",
+        allPredictions.length
+    );
+
     const fixtureList = await FixtureService.getListCustom({
         fixture_week: req.query.fixture_week,
         league_id: req.query.league_id,
@@ -382,9 +392,13 @@ module.exports.getDetail = async (req) => {
                     const winnerTeamWhenTie = prediction.winner;
                     const playerOfTheMatch = prediction.player_of_the_match;
 
-                    const fixturePredictions = predictions.filter((p) => {
+                    const fixturePredictions = allPredictions.filter((p) => {
                         return p.fixture_id == fixtureObj[0].fixture.id;
                     });
+                    console.log(
+                        "🚀 ~ file: LeaderboardService.js:387 ~ fixturePredictions ~ fixturePredictions",
+                        fixturePredictions
+                    );
 
                     const predictionsStringArr = fixturePredictions.map(
                         (fp) => {
@@ -405,12 +419,20 @@ module.exports.getDetail = async (req) => {
                         fixtureHomeTeamResult + ":" + fixtureAwayTeamResult;
 
                     let underdog_percentage = 100;
+
                     if (predictedResult == finalResult) {
+                        console.log(
+                            "underdog bonus same all for " +
+                                predictedResult +
+                                " - " +
+                                finalResult
+                        );
                         underdog_percentage = Math.round(
                             (reducedPredictions[predictedResult] /
                                 fixturePredictions.length) *
                                 100
                         );
+                        console.log("un", underdog_percentage);
                     }
 
                     let win_lose_draw_result = "";
@@ -484,7 +506,6 @@ module.exports.getDetail = async (req) => {
                         singlePredictionResult.points[0]
                     );
 
-                    console.log("values", values);
                     const sum = values.reduce((accumulator, value) => {
                         return accumulator + value;
                     }, 0);
@@ -512,7 +533,6 @@ module.exports.getDetail = async (req) => {
                         singlePredictionResult.points[0].total += 2;
                         singlePredictionResult.points[0].boosted_total += 2;
                     }
-
                     predictionResultList.results.push(singlePredictionResult);
                 }
             }
@@ -534,8 +554,6 @@ module.exports.getDetail = async (req) => {
 
             leaderboardListReturn.push({ ...fa, sum: sum });
         });
-
-        console.log("prediction", leaderboardListReturn);
     } else {
         const user = await UserService.getUserByID(req.params.id);
         predictionResultList.user = user;
@@ -578,15 +596,19 @@ module.exports.getOverall = async (req) => {
             return f.fixture.id === parseInt(prediction.fixture_id);
         });
 
-        let fixturePlayers = playerStatistics.filter((ps) => {
-            return ps.fixtureId == fixtureObj[0].fixture.id;
-        });
-
-        let playerOfTheMatchResult = fixturePlayers.sort(function (a, b) {
-            return b.statistics[0].games.rating - a.statistics[0].games.rating;
-        })[0]?.player;
+      let fixturePlayers  = [];
+      let playerOfTheMatchResult = 000000
 
         if (fixtureObj[0]) {
+
+          fixturePlayers = playerStatistics.filter((ps) => {
+                return ps.fixtureId == fixtureObj[0].fixture.id;
+            });
+    
+            playerOfTheMatchResult = fixturePlayers.sort(function (a, b) {
+                return b.statistics[0].games.rating - a.statistics[0].games.rating;
+            })[0]?.player;
+
             let singlePredictionResult = {
                 _id: prediction._id,
                 user: prediction.user,
@@ -668,6 +690,7 @@ module.exports.getOverall = async (req) => {
                     {}
                 );
 
+                console.log("reduce", reducedPredictions);
                 const predictedResult = predictHomeTeam + ":" + predictAwayTeam;
                 const finalResult =
                     fixtureHomeTeamResult + ":" + fixtureAwayTeamResult;
@@ -778,9 +801,12 @@ module.exports.getOverall = async (req) => {
                 }
 
                 if (underdog_percentage < 10) {
+                    console.log("under dog");
                     singlePredictionResult.points[0].underdog_bonus = 2;
                     singlePredictionResult.points[0].total += 2;
                     singlePredictionResult.points[0].boosted_total += 2;
+                } else {
+                    console.log("no under dog");
                 }
 
                 predictionResultList.push(singlePredictionResult);
@@ -817,7 +843,7 @@ module.exports.getOverall = async (req) => {
     });
     return new Promise(function (resolve, reject) {
         try {
-            resolve(leaderboardListReturn.sort(compareAllSumPoint));
+            resolve(leaderboardListReturn.sort(compareAllSumPoint).splice(20));
         } catch (error) {
             console.log("error", error);
             reject(error);
