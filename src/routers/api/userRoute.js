@@ -30,6 +30,7 @@ router.post("/login", AuthController.Login);
 router.post("/logout", AuthController.Logout);
 router.post("/forget-password", AuthController.ForgetPassword);
 router.post("/reset-password", AuthController.ResetPassword);
+router.post("/change-password", AuthController.ChangePassword);
 
 router.get("/me", authMiddleware.check, AuthController.getMe);
 router.put("/me", authMiddleware.check, AuthController.updateAccount);
