@@ -240,8 +240,8 @@ module.exports.forgetPassword = async (data) => {
                     message: "You already have request the reset code",
                 });
             } else {
-                // let code = generateOTP.getCode();
-                let code = "111111";
+                let code = generateOTP.getCode();
+                // let code = "111111";
                 let currentDate = new Date();
 
                 let otpSaved = await ForgetPasswordOTPModel.create({
