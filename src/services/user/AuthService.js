@@ -252,17 +252,16 @@ module.exports.forgetPassword = async (data) => {
                     ),
                 });
 
+                // send otp sms here
+
+                let smsResponse = await sendSMS({
+                    phone: phone,
+                    message: `${code} is your BFF reset code. Your code is valid for 3 minute.`,
+                });
+
+                console.log("sms response", smsResponse);
                 console.log("otp saved", otpSaved);
             }
-
-            // send otp sms here
-
-            let smsResponse = await sendSMS({
-                phone: phone,
-                message: `${code} is your BFF reset code. Your code is valid for 3 minute.`,
-            });
-
-            console.log('sms response', smsResponse);
 
             resolve("We have sent you the reset code");
         }
