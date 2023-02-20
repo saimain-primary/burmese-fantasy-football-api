@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-const currentDate = new Date();
-
 const OTPSchema = new mongoose.Schema(
   {
     code: {
@@ -19,7 +17,6 @@ const OTPSchema = new mongoose.Schema(
     },
     expireAt: {
       type: Date,
-      default: currentDate.setMinutes(currentDate.getMinutes() + 1),
       required: true,
     },
   },
