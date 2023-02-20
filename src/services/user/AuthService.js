@@ -259,7 +259,7 @@ module.exports.forgetPassword = async (data) => {
 
             let smsResponse = await sendSMS({
                 phone: phone,
-                message: `${otpSaved.code} is your BFF reset code. Your code is valid for 3 minute.`,
+                message: `${code} is your BFF reset code. Your code is valid for 3 minute.`,
             });
 
             console.log('sms response', smsResponse);
