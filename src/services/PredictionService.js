@@ -33,9 +33,9 @@ module.exports.predict = async (req) => {
         setDefaultsOnInsert: true,
     };
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
         // check match for update valid
-        const fixtureDetail = FixtureService.getDetail(data.fixture_id);
+        const fixtureDetail = await FixtureService.getDetail(data.fixture_id);
         console.log("🚀 ~ file: PredictionService.js:39 ~ fixtureDetail:", fixtureDetail)
         // check 2x boost exist
         if (data.boosted) {
