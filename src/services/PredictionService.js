@@ -36,24 +36,43 @@ module.exports.predict = async (req) => {
     return new Promise(async function (resolve, reject) {
         // check match for update valid
         const fixtureDetail = await FixtureService.getDetail(data.fixture_id);
-        console.log("🚀 ~ file: PredictionService.js:39 ~ fixtureDetail:", fixtureDetail)
-        // check 2x boost exist
-        if (data.boosted) {
-            PredictionModel.findOne({
-                week: data.week,
-                league_id: data.league_id,
-                user_id: mongoose.Types.ObjectId(userId),
-                boosted: true,
-            }).exec(function (err, doc) {
-                if (err) {
-                    reject(err);
-                }
-                if (doc) {
-                    if (doc.fixture_id != data.fixture_id) {
-                        reject({
-                            message: `You have already used 2x booster in
-              ${doc.home_team.name} vs ${doc.away_team.name} match for Game Week ${doc.week}. You can update your prediction and try again.`,
-                        });
+        console.log(
+            "🚀 ~ file: PredictionService.js:39 ~ fixtureDetail:",
+            fixtureDetail
+        );
+        const currentTimestamp = new Date().getTime();
+        const fixtureTimestamp = fixtureDetail[0].fixture.timestamp;
+        if (fixtureTimestamp > currentTimestamp) {
+            console.log("The other timestamp is in the future.");
+            // check 2x boost exist
+            if (data.boosted) {
+                PredictionModel.findOne({
+                    week: data.week,
+                    league_id: data.league_id,
+                    user_id: mongoose.Types.ObjectId(userId),
+                    boosted: true,
+                }).exec(function (err, doc) {
+                    if (err) {
+                        reject(err);
+                    }
+                    if (doc) {
+                        if (doc.fixture_id != data.fixture_id) {
+                            reject({
+                                message: `You have already used 2x booster in
+            ${doc.home_team.name} vs ${doc.away_team.name} match for Game Week ${doc.week}. You can update your prediction and try again.`,
+                            });
+                        } else {
+                            PredictionModel.findOneAndUpdate(
+                                query,
+                                update,
+                                options
+                            ).exec(function (err, result) {
+                                if (err) {
+                                    reject(err);
+                                }
+                                resolve(result);
+                            });
+                        }
                     } else {
                         PredictionModel.findOneAndUpdate(
                             query,
@@ -63,33 +82,26 @@ module.exports.predict = async (req) => {
                             if (err) {
                                 reject(err);
                             }
+
                             resolve(result);
                         });
                     }
-                } else {
-                    PredictionModel.findOneAndUpdate(
-                        query,
-                        update,
-                        options
-                    ).exec(function (err, result) {
+                });
+            } else {
+                PredictionModel.findOneAndUpdate(query, update, options).exec(
+                    function (err, result) {
                         if (err) {
                             reject(err);
                         }
 
                         resolve(result);
-                    });
-                }
-            });
-        } else {
-            PredictionModel.findOneAndUpdate(query, update, options).exec(
-                function (err, result) {
-                    if (err) {
-                        reject(err);
                     }
-
-                    resolve(result);
-                }
-            );
+                );
+            }
+        } else {
+            reject({
+                message: `You can't do that now, Cheater 💩`,
+            });
         }
     });
 };
