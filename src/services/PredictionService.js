@@ -95,7 +95,7 @@ module.exports.predict = async (req) => {
             }
         } else {
             reject({
-                message: `You can't do that now, Cheater 💩`,
+                message: `Cheating isn't cool. Let's keep the game fair for everyone. Please play by the rules.`,
             });
         }
     });
