@@ -42,7 +42,7 @@ module.exports.predict = async (req) => {
         );
         const currentTimestamp = new Date().getTime();
         const fixtureTimestamp = fixtureDetail[0].fixture.timestamp;
-        if (fixtureTimestamp > currentTimestamp) {
+        if (fixtureTimestamp < currentTimestamp) {
             console.log("The other timestamp is in the future.");
             // check 2x boost exist
             if (data.boosted) {
