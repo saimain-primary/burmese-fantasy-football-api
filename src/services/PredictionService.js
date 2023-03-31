@@ -97,7 +97,7 @@ module.exports.predict = async (req) => {
             }
         } else {
             reject({
-                message: `Cheating isn't cool. Let's keep the game fair for everyone. Please play by the rules.`,
+                message: `The match is already started.`,
             });
         }
     });
