@@ -36,7 +36,7 @@ module.exports.predict = async (req) => {
     return new Promise(async function (resolve, reject) {
         // check match for update valid
         const fixtureDetail = await FixtureService.getDetail(data.fixture_id);
-        const currentTimestamp = new Date().getTime();
+        const currentTimestamp = Math.floor(Date.now()/ 1000);
         console.log("🚀 ~ file: PredictionService.js:40 ~ currentTimestamp:", currentTimestamp)
         const fixtureTimestamp = fixtureDetail[0].fixture.timestamp;
         console.log("🚀 ~ file: PredictionService.js:42 ~ fixtureTimestamp:", fixtureTimestamp)
