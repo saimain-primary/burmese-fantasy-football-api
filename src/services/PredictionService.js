@@ -37,7 +37,9 @@ module.exports.predict = async (req) => {
         // check match for update valid
         const fixtureDetail = await FixtureService.getDetail(data.fixture_id);
         const currentTimestamp = new Date().getTime();
+        console.log("🚀 ~ file: PredictionService.js:40 ~ currentTimestamp:", currentTimestamp)
         const fixtureTimestamp = fixtureDetail[0].fixture.timestamp;
+        console.log("🚀 ~ file: PredictionService.js:42 ~ fixtureTimestamp:", fixtureTimestamp)
         if (fixtureTimestamp > currentTimestamp) {
             // check 2x boost exist
             if (data.boosted) {
